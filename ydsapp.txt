@@ -1,0 +1,7 @@
+ şimdi şöyle bir şey yapacağız, ben YDS sınavına girmeyi düşünüyorum bunun için hem kendim ve diğer inlarında yararına kullanabileceğimiz bir instagram ve mobil app yapmayı düşünüyorum mantık ilk başta başıt olacak.
+
+asıl hedefim YDS çıkan keliemlere çalışabiceğim bir uygulama ve hatırlama olsun diye instagram postu atmak. 
+
+Kelimeler için Bu zamana kadar çıkmış YDS sınavındaki kelimeler olabilir, sen nette bi arama yap 100 kelime bul bunları a2-b1-b2-c1 olacak şekilde yığımlama. 
+
+ilk başta istersen html tabanlı gidelim bunun için cloudflare kullabnabiliriz github ile piple line kurup, ilerki aşamada o site üzerinden üretilen postları onaylayıp (pngleri indir butonu getir indirip post atabileyim). birde o html de belki manuelş post üretebilirim bu yüzden düzneleme editörü gibi basit bir şey yap örnek şablonların nasıl olacağını sana örnek.pnk diye ydsapp e yükleyecem progrma isim ve vs için sonradan düşünecez.

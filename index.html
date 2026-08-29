@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>YDS Kelime — 100 Çıkmış Kelime</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400;1,500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="authGate" class="auth-gate">
+    <form id="authForm" class="auth-box">
+      <h1 class="auth-title">YDS Kelime</h1>
+      <p class="auth-sub">Bu site şifre korumalı.</p>
+      <input id="authPass" type="password" placeholder="Şifre" autocomplete="current-password" />
+      <button type="submit" class="btn btn-good btn-wide">Giriş</button>
+      <p id="authErr" class="auth-err"></p>
+    </form>
+  </div>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark">YDS</span>
+      <span class="brand-text">Kelime Çalışma</span>
+    </div>
+    <div class="progress">
+      <div class="progress-bar"><span id="progressFill"></span></div>
+      <span id="progressText" class="progress-text">0 / 0 öğrenildi</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" data-view="list" role="tab">Liste</button>
+    <button class="tab" data-view="card" role="tab">Kart</button>
+    <button class="tab" data-view="quiz" role="tab">Test</button>
+    <button class="tab" data-view="post" role="tab">Post</button>
+  </nav>
+
+  <section class="controls">
+    <input id="search" type="search" placeholder="Kelime veya anlam ara…" autocomplete="off" />
+    <div class="levels" id="levelFilter">
+      <button class="chip is-active" data-level="all">Hepsi</button>
+      <button class="chip" data-level="A2">A2</button>
+      <button class="chip" data-level="B1">B1</button>
+      <button class="chip" data-level="B2">B2</button>
+      <button class="chip" data-level="C1">C1</button>
+    </div>
+    <label class="only-unlearned">
+      <input type="checkbox" id="onlyUnlearned" /> Sadece öğrenilmemişler
+    </label>
+  </section>
+
+  <main id="main">
+    <!-- LIST VIEW -->
+    <div id="view-list" class="view is-active">
+      <p id="listCount" class="list-count"></p>
+      <ul id="wordList" class="word-list"></ul>
+    </div>
+
+    <!-- CARD VIEW -->
+    <div id="view-card" class="view">
+      <div id="cardEmpty" class="empty" hidden>Bu filtrede kelime yok.</div>
+      <div id="cardStage" class="card-stage">
+        <div id="flashcard" class="flashcard">
+          <div class="flashcard-face flashcard-front">
+            <span class="face-level" id="cardLevelFront"></span>
+            <span class="face-word" id="cardWordFront"></span>
+            <span class="face-pos" id="cardPosFront"></span>
+            <span class="face-hint">Anlamı görmek için dokun</span>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <span class="face-tr" id="cardTr"></span>
+            <span class="face-ex-en" id="cardExEn"></span>
+            <span class="face-ex-tr" id="cardExTr"></span>
+            <span class="face-syn" id="cardSyn"></span>
+          </div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button id="cardDontKnow" class="btn btn-bad">Bilmiyorum</button>
+        <button id="cardFlip" class="btn btn-neutral">Çevir</button>
+        <button id="cardKnow" class="btn btn-good">Biliyorum</button>
+      </div>
+      <div class="card-nav">
+        <button id="cardPrev" class="btn-ghost">‹ Önceki</button>
+        <span id="cardPos" class="card-pos">0 / 0</span>
+        <button id="cardNext" class="btn-ghost">Sonraki ›</button>
+      </div>
+      <button id="cardShuffle" class="btn-ghost btn-shuffle">Karıştır</button>
+    </div>
+
+    <!-- QUIZ VIEW -->
+    <div id="view-quiz" class="view">
+      <div id="quizIntro" class="quiz-intro">
+        <h2>Test</h2>
+        <p>Seçili seviyeden 10 soruluk çoktan seçmeli test. İngilizce kelimenin Türkçe anlamını seç.</p>
+        <button id="quizStart" class="btn btn-good btn-wide">Teste başla</button>
+      </div>
+      <div id="quizRun" class="quiz-run" hidden>
+        <div class="quiz-top">
+          <span id="quizProgress">1 / 10</span>
+          <span id="quizScore">Doğru: 0</span>
+        </div>
+        <div class="quiz-question">
+          <span class="quiz-level" id="quizLevel"></span>
+          <span class="quiz-word" id="quizWord"></span>
+        </div>
+        <div id="quizOptions" class="quiz-options"></div>
+        <button id="quizNext" class="btn btn-neutral btn-wide" hidden>Sonraki</button>
+      </div>
+      <div id="quizResult" class="quiz-result" hidden>
+        <h2>Sonuç</h2>
+        <p class="quiz-final" id="quizFinal"></p>
+        <p class="quiz-best" id="quizBest"></p>
+        <div id="quizWrong" class="quiz-wrong"></div>
+        <button id="quizRetry" class="btn btn-good btn-wide">Tekrar dene</button>
+      </div>
+    </div>
+    <!-- POST VIEW -->
+    <div id="view-post" class="view">
+      <p class="post-hint">İnstagram postu (1080×1350). Kelime seç, metni istersen düzenle, PNG indir.</p>
+
+      <div class="post-preview">
+        <canvas id="postCanvas" width="1080" height="1350"></canvas>
+      </div>
+
+      <div class="post-toolbar">
+        <button id="postPrev" class="btn-ghost">‹</button>
+        <select id="postWordSelect" class="post-select"></select>
+        <button id="postNext" class="btn-ghost">›</button>
+        <button id="postRandom" class="btn-ghost">Rastgele</button>
+      </div>
+
+      <div class="post-fields">
+        <label>Kelime<input id="fWord" type="text" /></label>
+        <label>Türkçe anlam<input id="fTr" type="text" /></label>
+        <label>Örnek cümle (EN)<textarea id="fExEn" rows="2"></textarea></label>
+        <label>Örnek cümle (TR)<textarea id="fExTr" rows="2"></textarea></label>
+        <label>Marka / filigran<input id="fMark" type="text" placeholder="ör. YDS·Kelime" /></label>
+      </div>
+
+      <button id="postDownload" class="btn btn-good btn-wide">PNG indir</button>
+
+      <div class="post-queue">
+        <div class="post-queue-head">
+          <strong>Günlük takvim</strong>
+          <span id="postQueueCount" class="post-queue-count">0 gün</span>
+        </div>
+        <p class="post-hint">Sıradaki her kelime bir güne denk gelir (günde 1 post). Her gün "bugünün postu"nu indirip Instagram'a yükle.</p>
+
+        <label class="post-start">
+          <span>Başlangıç günü (1. sıra = bu gün)</span>
+          <input id="postStartDate" type="date" />
+        </label>
+
+        <div id="postToday" class="post-today" hidden>
+          <span id="postTodayLabel" class="post-today-label"></span>
+          <button id="postTodayDownload" class="btn btn-good btn-wide">Bugünün postunu indir</button>
+        </div>
+
+        <div class="post-queue-add">
+          <button id="postQueueAdd" class="btn-ghost">+ Bu postu ekle</button>
+          <select id="postBulkLevel" class="post-select">
+            <option value="all">Tüm seviyeler</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+          </select>
+          <button id="postQueueBulk" class="btn-ghost">Seviyeyi ekle</button>
+        </div>
+        <ul id="postQueueList" class="post-queue-list"></ul>
+        <button id="postQueueDownload" class="btn-ghost btn-wide">Tüm takvimi tek seferde indir</button>
+        <button id="postQueueClear" class="btn-ghost btn-wide">Listeyi temizle</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <details class="data-panel">
+      <summary>Veri — yedek / aktarım</summary>
+      <div class="data-actions">
+        <button id="dataExportWords" class="btn-ghost">words.json indir</button>
+        <button id="dataExportAll" class="btn-ghost">Tam yedek (JSON)</button>
+        <label class="btn-ghost data-import-label">
+          JSON yükle
+          <input id="dataImport" type="file" accept="application/json,.json" hidden />
+        </label>
+        <button id="dataReset" class="btn-ghost">Varsayılana dön</button>
+      </div>
+      <p id="dataMsg" class="data-msg"></p>
+    </details>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="post.js"></script>
+</body>
+</html>
