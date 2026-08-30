@@ -103,6 +103,13 @@
 
     if (d.source === "review") { render(); return; } // SRS'i gradeReview zaten işledi
 
+    if (d.grade) {                                    // kart: 3 kademeli değerlendirme
+      applyGrade(d.wordId, d.grade);
+      render();
+      return;
+    }
+
+    // eski sinyaller (liste / test): known / correct
     var wrong = (d.known === false) || (d.correct === false);
     var right = (d.known === true) || (d.correct === true);
     var srs = load(LS_SRS, {}) || {};
@@ -116,6 +123,22 @@
       save(LS_SRS, srs);
     }
     render();
+  }
+
+  // Unuttum -> yarın · Zor -> kısa aralık, aynı kutu · Kolay -> bir sonraki kutu
+  function applyGrade(id, grade) {
+    var srs = load(LS_SRS, {}) || {};
+    var cur = srs[id] || { box: 1 };
+    if (grade === "again") {
+      srs[id] = { box: 1, due: addDays(todayStr(), 1) };
+    } else if (grade === "hard") {
+      var b = Math.max(1, cur.box || 1);
+      var full = BOX_DAYS[Math.min(b, BOX_DAYS.length - 1)] || 1;
+      srs[id] = { box: b, due: addDays(todayStr(), Math.max(2, Math.round(full / 2))) };
+    } else {
+      advance(srs, id, cur.box || 1);
+    }
+    save(LS_SRS, srs);
   }
 
   function advance(srs, id, box) {

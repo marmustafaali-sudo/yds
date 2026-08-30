@@ -7,6 +7,7 @@
   var LS_WORDS_OVERRIDE = "yds.words.override.v1";
   var LS_POST_QUEUE = "yds.postQueue.v1";
   var LS_POST_START = "yds.postStart.v1";
+  var LS_MNEMO = "yds.mnemonic.v1";
 
   var state = {
     words: [],
@@ -18,6 +19,8 @@
     // card
     cardDeck: [],
     cardIndex: 0,
+    hintLevel: 0,
+    mnemo: loadJSON(LS_MNEMO, {}),
     // quiz
     quiz: null
   };
@@ -72,13 +75,16 @@
     el.cardLevelFront = document.getElementById("cardLevelFront");
     el.cardWordFront = document.getElementById("cardWordFront");
     el.cardPosFront = document.getElementById("cardPosFront");
+    el.cardCue = document.getElementById("cardCue");
+    el.cardHintBtn = document.getElementById("cardHintBtn");
     el.cardTr = document.getElementById("cardTr");
     el.cardExEn = document.getElementById("cardExEn");
     el.cardExTr = document.getElementById("cardExTr");
     el.cardSyn = document.getElementById("cardSyn");
-    el.cardKnow = document.getElementById("cardKnow");
-    el.cardDontKnow = document.getElementById("cardDontKnow");
-    el.cardFlip = document.getElementById("cardFlip");
+    el.cardMnemo = document.getElementById("cardMnemo");
+    el.cardAgain = document.getElementById("cardAgain");
+    el.cardHard = document.getElementById("cardHard");
+    el.cardEasy = document.getElementById("cardEasy");
     el.cardPrev = document.getElementById("cardPrev");
     el.cardNext = document.getElementById("cardNext");
     el.cardPos = document.getElementById("cardPos");
@@ -136,9 +142,11 @@
 
     // card
     el.flashcard.addEventListener("click", flipCard);
-    el.cardFlip.addEventListener("click", flipCard);
-    el.cardKnow.addEventListener("click", function () { markCard(true); });
-    el.cardDontKnow.addEventListener("click", function () { markCard(false); });
+    el.cardHintBtn.addEventListener("click", function (e) { e.stopPropagation(); bumpHint(); });
+    el.cardMnemo.addEventListener("click", function (e) { e.stopPropagation(); });
+    el.cardAgain.addEventListener("click", function () { gradeCard("again"); });
+    el.cardHard.addEventListener("click", function () { gradeCard("hard"); });
+    el.cardEasy.addEventListener("click", function () { gradeCard("easy"); });
     el.cardPrev.addEventListener("click", function () { moveCard(-1); });
     el.cardNext.addEventListener("click", function () { moveCard(1); });
     el.cardShuffle.addEventListener("click", function () { buildDeck(true); showCard(); });
@@ -352,7 +360,8 @@
       '<div class="en">' + esc(w.example_en || "") + "</div>" +
       '<div class="tr">' + esc(w.example_tr || "") + "</div>" +
       ((w.synonyms && w.synonyms.length)
-        ? '<div class="syn">eş anlamlı: ' + esc(w.synonyms.join(", ")) + "</div>" : "");
+        ? '<div class="syn">eş anlamlı: ' + esc(w.synonyms.join(", ")) + "</div>" : "") +
+      (getMnemo(w.id) ? '<div class="syn">🔑 ' + esc(getMnemo(w.id)) + "</div>" : "");
     li.appendChild(ex);
 
     toggle.addEventListener("click", function () {
@@ -394,6 +403,8 @@
     el.cardShuffle.hidden = !hasCards;
     document.querySelector(".card-actions").hidden = !hasCards;
     document.querySelector(".card-nav").hidden = !hasCards;
+    var gradeHint = document.querySelector(".card-grade-hint");
+    if (gradeHint) gradeHint.hidden = !hasCards;
     if (!hasCards) return;
 
     if (state.cardIndex >= deck.length) state.cardIndex = deck.length - 1;
@@ -407,6 +418,9 @@
     el.cardExTr.textContent = w.example_tr || "";
     el.cardSyn.textContent = (w.synonyms && w.synonyms.length) ? "eş anlamlı: " + w.synonyms.join(", ") : "";
     el.cardPos.textContent = (state.cardIndex + 1) + " / " + deck.length;
+    state.hintLevel = 0;
+    renderHint(w);
+    renderMnemo(w);
   }
 
   function flipCard() {
@@ -420,15 +434,107 @@
     showCard();
   }
 
-  function markCard(known) {
+  /* ---------- kart: kademeli ipucu ---------- */
+
+  function renderHint(w) {
+    var word = w.en || "";
+    if (state.hintLevel <= 0) {
+      el.cardCue.hidden = true;
+      el.cardCue.textContent = "";
+      el.cardHintBtn.hidden = word.length < 3;
+      el.cardHintBtn.textContent = "İpucu ver";
+      return;
+    }
+    var shown = state.hintLevel === 1 ? 1 : Math.min(word.length - 1, Math.ceil(word.length / 2));
+    var out = "";
+    for (var i = 0; i < word.length; i++) {
+      out += (i < shown ? word[i] : (word[i] === " " ? " " : "•"));
+    }
+    el.cardCue.textContent = out;
+    el.cardCue.hidden = false;
+    el.cardHintBtn.hidden = state.hintLevel >= 2;
+    el.cardHintBtn.textContent = "Biraz daha";
+  }
+
+  function bumpHint() {
+    if (!state.cardDeck.length) return;
+    state.hintLevel = Math.min(2, state.hintLevel + 1);
+    renderHint(state.cardDeck[state.cardIndex]);
+  }
+
+  /* ---------- kart: hafıza kancası (mnemonic) ---------- */
+
+  function getMnemo(id) { return (state.mnemo && state.mnemo[id]) || ""; }
+
+  function setMnemo(id, text) {
+    text = String(text || "").trim();
+    if (text) state.mnemo[id] = text;
+    else delete state.mnemo[id];
+    saveJSON(LS_MNEMO, state.mnemo);
+  }
+
+  function renderMnemo(w) {
+    var host = el.cardMnemo;
+    host.innerHTML = "";
+    var text = getMnemo(w.id);
+
+    if (!text) {
+      var add = document.createElement("button");
+      add.type = "button";
+      add.className = "mnemo-add";
+      add.textContent = "🔑 Hafıza kancası ekle";
+      add.addEventListener("click", function (e) { e.stopPropagation(); openMnemoEditor(w, ""); });
+      host.appendChild(add);
+      return;
+    }
+
+    var box = document.createElement("div");
+    box.className = "mnemo-box";
+    var label = document.createElement("div");
+    label.className = "mnemo-label";
+    label.textContent = "🔑 Hafıza kancası — düzenlemek için dokun";
+    var p = document.createElement("div");
+    p.className = "mnemo-text";
+    p.textContent = text;
+    box.appendChild(label);
+    box.appendChild(p);
+    box.addEventListener("click", function (e) { e.stopPropagation(); openMnemoEditor(w, text); });
+    host.appendChild(box);
+  }
+
+  function openMnemoEditor(w, current) {
+    var host = el.cardMnemo;
+    host.innerHTML = "";
+    var box = document.createElement("div");
+    box.className = "mnemo-box";
+    var label = document.createElement("div");
+    label.className = "mnemo-label";
+    label.textContent = "🔑 Hafıza kancası";
+    var ta = document.createElement("textarea");
+    ta.value = current || "";
+    ta.placeholder = "ör. ses benzetmesi + görüntü — kendi ürettiğin daha iyi akılda kalır";
+    ta.addEventListener("click", function (e) { e.stopPropagation(); });
+    ta.addEventListener("blur", function () {
+      setMnemo(w.id, ta.value);
+      if (state.view === "list") renderList();
+      renderMnemo(w);
+    });
+    box.appendChild(label);
+    box.appendChild(ta);
+    host.appendChild(box);
+    ta.focus();
+  }
+
+  /* ---------- kart: 3 kademeli değerlendirme ---------- */
+
+  function gradeCard(grade) {
     if (!state.cardDeck.length) return;
     var w = state.cardDeck[state.cardIndex];
-    setLearned(w.id, known);
-    studied({ wordId: w.id, known: known, source: "card" });
+    setLearned(w.id, grade !== "again");
+    studied({ wordId: w.id, grade: grade, known: grade !== "again", source: "card" });
     if (state.cardIndex < state.cardDeck.length - 1) {
       state.cardIndex++;
     }
-    // öğrenilmişleri gizliyorsak deste küçülebilir
     if (state.onlyUnlearned) {
       buildDeck(false);
     }
@@ -437,7 +543,7 @@
 
   /* ---------- quiz ---------- */
 
-  var QUIZ_INTRO_TEXT = "Seçili seviyeden 10 soruluk çoktan seçmeli test. Her soru için 30 saniye. Doğru + hızlı + seri = daha çok puan.";
+  var QUIZ_INTRO_TEXT = "Seçili seviyeden 10 soru: anlam seç + cümlede boşluk doldur (karışık). Her soru 30 saniye. Doğru + hızlı + seri = daha çok puan.";
   var QUIZ_TIME = 30;
   var RING_CIRC = 326.726; // 2 * PI * 52
 
@@ -493,10 +599,9 @@
   }
 
   function revealCorrect(q) {
-    var correctText = (q.word.tr || []).join(", ");
     el.quizOptions.querySelectorAll(".quiz-opt").forEach(function (b) {
       b.disabled = true;
-      if (b.textContent === correctText) b.classList.add("correct");
+      if (b.textContent === q.correctText) b.classList.add("correct");
     });
   }
 
@@ -534,7 +639,7 @@
     }
     var n = Math.min(10, pool.length);
     var questions = shuffled(pool).slice(0, n).map(function (w) {
-      return { word: w, options: makeOptions(w, pool), answered: false, correct: false, blank: false };
+      return makeQuestion(w, pool);
     });
     state.quiz = {
       questions: questions, index: 0, score: 0, points: 0,
@@ -546,22 +651,58 @@
     renderQuizQuestion();
   }
 
-  function makeOptions(correctWord, pool) {
-    var correctText = (correctWord.tr || []).join(", ");
-    var distractors = shuffled(pool.filter(function (w) { return w.id !== correctWord.id; }))
+  function optionsFrom(correctText, pool, correctId, pick) {
+    var distractors = shuffled(pool.filter(function (w) { return w.id !== correctId; }))
       .slice(0, 3)
-      .map(function (w) { return (w.tr || []).join(", "); });
+      .map(pick);
     return shuffled([correctText].concat(distractors)).map(function (text) {
       return { text: text, isCorrect: text === correctText };
     });
+  }
+
+  function clozeBlank(sentence, word) {
+    if (!sentence || !word) return null;
+    var escd = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = new RegExp("\\b" + escd + "\\b", "i");
+    if (re.test(sentence)) return sentence.replace(re, "_____");
+    if (word.length >= 6) {
+      var stem = word.slice(0, Math.max(4, word.length - 3)).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      var re2 = new RegExp("\\b" + stem + "[a-z]*\\b", "i");
+      if (re2.test(sentence)) return sentence.replace(re2, "_____");
+    }
+    return null;
+  }
+
+  function makeQuestion(w, pool) {
+    var sentence = clozeBlank(w.example_en || "", w.en);
+    if (sentence && Math.random() < 0.5) {
+      return {
+        word: w, type: "cloze", sentence: sentence, correctText: w.en,
+        options: optionsFrom(w.en, pool, w.id, function (x) { return x.en; }),
+        answered: false, correct: false, blank: false
+      };
+    }
+    var ct = (w.tr || []).join(", ");
+    return {
+      word: w, type: "meaning", correctText: ct,
+      options: optionsFrom(ct, pool, w.id, function (x) { return (x.tr || []).join(", "); }),
+      answered: false, correct: false, blank: false
+    };
   }
 
   function renderQuizQuestion() {
     var q = state.quiz.questions[state.quiz.index];
     el.quizProgress.textContent = (state.quiz.index + 1) + " / " + state.quiz.questions.length;
     updatePointsUI();
-    el.quizLevel.textContent = q.word.level;
-    el.quizWord.textContent = q.word.en;
+    if (q.type === "cloze") {
+      el.quizLevel.textContent = "BOŞLUĞA GELEN KELİME";
+      el.quizWord.textContent = q.sentence;
+      el.quizWord.classList.add("is-cloze");
+    } else {
+      el.quizLevel.textContent = q.word.level;
+      el.quizWord.textContent = q.word.en;
+      el.quizWord.classList.remove("is-cloze");
+    }
     el.quizNext.hidden = true;
     el.quizOptions.innerHTML = "";
     q.options.forEach(function (opt) {

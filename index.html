@@ -80,6 +80,8 @@
             <span class="face-level" id="cardLevelFront"></span>
             <span class="face-word" id="cardWordFront"></span>
             <span class="face-pos" id="cardPosFront"></span>
+            <span class="face-cue" id="cardCue" hidden></span>
+            <button type="button" class="card-hint-btn" id="cardHintBtn">İpucu ver</button>
             <span class="face-hint">Anlamı görmek için dokun</span>
           </div>
           <div class="flashcard-face flashcard-back">
@@ -87,13 +89,15 @@
             <span class="face-ex-en" id="cardExEn"></span>
             <span class="face-ex-tr" id="cardExTr"></span>
             <span class="face-syn" id="cardSyn"></span>
+            <div class="face-mnemo" id="cardMnemo"></div>
           </div>
         </div>
       </div>
+      <p class="card-grade-hint">Anlamı gördükten sonra ne kadar kolay hatırladın?</p>
       <div class="card-actions">
-        <button id="cardDontKnow" class="btn btn-bad">Bilmiyorum</button>
-        <button id="cardFlip" class="btn btn-neutral">Çevir</button>
-        <button id="cardKnow" class="btn btn-good">Biliyorum</button>
+        <button id="cardAgain" class="btn btn-bad">Unuttum<small>yarın</small></button>
+        <button id="cardHard" class="btn btn-hard">Zor<small>kısa aralık</small></button>
+        <button id="cardEasy" class="btn btn-good">Kolay<small>uzun aralık</small></button>
       </div>
       <div class="card-nav">
         <button id="cardPrev" class="btn-ghost">‹ Önceki</button>
@@ -107,7 +111,7 @@
     <div id="view-quiz" class="view">
       <div id="quizIntro" class="quiz-intro">
         <h2>Test</h2>
-        <p>Seçili seviyeden 10 soruluk çoktan seçmeli test. Her soru için 30 saniye. Doğru + hızlı + seri = daha çok puan.</p>
+        <p>Seçili seviyeden 10 soru: anlam seç + cümlede boşluk doldur (karışık). Her soru için 30 saniye. Doğru + hızlı + seri = daha çok puan.</p>
         <button id="quizStart" class="btn btn-good btn-wide">Teste başla</button>
       </div>
       <div id="quizRun" class="quiz-run" hidden>
