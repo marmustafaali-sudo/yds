@@ -378,6 +378,24 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .daily-card:empty { display: none; }
 .daily-head { display: flex; align-items: center; justify-content: space-between; }
 .daily-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+.daily-exam {
+  background: var(--bg); color: #fff; border-radius: 12px; padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.daily-exam-main { display: flex; align-items: baseline; gap: 8px; }
+.daily-exam-num {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 30px; font-weight: 700; color: #f8fafc; line-height: 1;
+}
+.daily-exam-word { font-size: 13px; color: #94a3b8; }
+.daily-exam-sub {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 12px; color: #cbd5e1;
+}
+.daily-exam-date {
+  background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
+  border-radius: 7px; padding: 3px 6px; font-size: 12px; font-family: inherit;
+}
 .daily-gear {
   border: 0; background: none; font-size: 15px; line-height: 1; cursor: pointer;
   color: var(--ink-soft); padding: 2px 4px;

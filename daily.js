@@ -8,8 +8,10 @@
   var LS_SRS   = "yds.srs.v1";        // { wordId: { box, due } }
   var LS_DONE  = "yds.doneDays.v1";   // ["YYYY-MM-DD", ...]  (ileride streak takvimi için)
   var LS_NOTIF = "yds.notif.v1";      // { enabled, time }
+  var LS_EXAM  = "yds.examDate.v1";   // "YYYY-MM-DD"
 
   var DEFAULT_GOAL = 15;
+  var DEFAULT_EXAM = "2026-11-22";    // YDS 2026 Sonbahar (ÖSYM) — kullanıcı değiştirebilir
   var BOX_DAYS = [0, 1, 3, 7, 16, 35]; // index = kutu (1..5); son kutuda "mezun" olur
   var NOTIF_ID = 1001;
 
@@ -56,6 +58,55 @@
   function getGoal() {
     var g = load(LS_GOAL, DEFAULT_GOAL);
     return (typeof g === "number" && g > 0) ? g : DEFAULT_GOAL;
+  }
+
+  /* ---------- sınav geri sayımı ---------- */
+
+  function getExam() {
+    var v = load(LS_EXAM, DEFAULT_EXAM);
+    return (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) ? v : DEFAULT_EXAM;
+  }
+  function daysToExam(isoStr) {
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    var ex = new Date(isoStr + "T00:00:00");
+    return Math.round((ex - now) / 86400000);
+  }
+  function fmtLongDate(isoStr) {
+    try {
+      return new Date(isoStr + "T00:00:00").toLocaleDateString("tr-TR",
+        { day: "numeric", month: "long", year: "numeric" });
+    } catch (e) { return isoStr; }
+  }
+  function examBox() {
+    var exam = getExam();
+    var left = daysToExam(exam);
+    var box = div("daily-exam");
+
+    var main = div("daily-exam-main");
+    if (left > 0) {
+      main.appendChild(span("daily-exam-num", String(left)));
+      main.appendChild(span("daily-exam-word", "gün kaldı"));
+    } else if (left === 0) {
+      main.appendChild(span("daily-exam-num", "Bugün"));
+      main.appendChild(span("daily-exam-word", "sınav günü — başarılar!"));
+    } else {
+      main.appendChild(span("daily-exam-num", "—"));
+      main.appendChild(span("daily-exam-word", "sınav tarihi geçti, güncelle"));
+    }
+    box.appendChild(main);
+
+    var sub = div("daily-exam-sub");
+    sub.appendChild(span("", "YDS · " + fmtLongDate(exam)));
+    var d = document.createElement("input");
+    d.type = "date";
+    d.className = "daily-exam-date";
+    d.value = exam;
+    d.addEventListener("change", function () {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d.value)) { save(LS_EXAM, d.value); render(); }
+    });
+    sub.appendChild(d);
+    box.appendChild(sub);
+    return box;
   }
   function getLog() {
     var l = load(LS_LOG, null);
@@ -163,6 +214,8 @@
     var head = div("daily-head");
     head.appendChild(span("daily-title", "Bugün"));
     host.appendChild(head);
+
+    host.appendChild(examBox());
 
     var goalRow = div("daily-goal");
     var top = div("daily-goal-top");
