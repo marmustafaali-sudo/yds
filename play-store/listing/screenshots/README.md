@@ -32,3 +32,19 @@ npm run open:android
 veya cihazda güç + ses kısma tuşları.
 
 Çekilen dosyaları bu klasöre `01-kart.png`, `02-test.png` ... şeklinde koy.
+
+## Hazır ekran görüntüleri (2026-08-30)
+
+Cihazdan çekilip 1080×2160'a (2:1, Play uyumlu) kırpıldı:
+
+| Dosya | İçerik |
+|---|---|
+| `1-bugun-geri-sayim.png` | Bugün kartı + YDS geri sayımı + günlük hedef |
+| `2-kart-degerlendirme.png` | Flashcard + Unuttum / Zor / Kolay + kademeli ipucu |
+| `3-kart-hafiza-kancasi.png` | Kart arka yüzü + "Hafıza kancası ekle" |
+| `4-test-bosluk-doldur.png` | Test — cümlede boşluk doldurma (cloze) sorusu |
+| `5-test-cevap-puan.png` | Test — doğru cevap + puan + seri |
+
+Not: bu 5 görsel lale arka planı eklenmeden önce çekildi (özellikler doğru,
+sadece zemin düz). İstersen telefondan yeni ekran görüntüsü alıp aynı adlarla
+değiştir; Play Console'da güncellemesi kolay.
