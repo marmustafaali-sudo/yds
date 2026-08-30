@@ -42,7 +42,7 @@ body {
   background: #f1f5f9;
   color: var(--ink);
   -webkit-tap-highlight-color: transparent;
-  padding-bottom: 40px;
+  padding-bottom: calc(66px + env(safe-area-inset-bottom));
 }
 
 /* Header */
@@ -67,16 +67,22 @@ body {
 .progress-bar span { display: block; height: 100%; width: 0; background: var(--good); transition: width .3s; }
 .progress-text { font-size: 12px; color: #cbd5e1; display: block; margin-top: 5px; }
 
-/* Tabs */
+/* Alt navigasyon çubuğu */
 .tabs {
-  display: flex; max-width: var(--maxw); margin: 0 auto; background: #fff;
-  border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 9;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; max-width: var(--maxw); margin: 0 auto;
+  background: #fff; border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -1px 10px rgba(15, 23, 42, 0.05);
 }
 .tab {
-  flex: 1; border: 0; background: none; padding: 13px 0; font-size: 14px; font-weight: 600;
-  color: var(--ink-soft); cursor: pointer; border-bottom: 2px solid transparent;
+  flex: 1; border: 0; background: none; padding: 9px 0 7px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600; color: var(--ink-soft);
+  -webkit-tap-highlight-color: transparent;
 }
-.tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab svg { width: 22px; height: 22px; display: block; }
+.tab.is-active { color: var(--accent); }
 
 /* Controls */
 .controls { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 4px; }
@@ -142,7 +148,10 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 }
 .flashcard-back { transform: rotateY(180deg); }
 .face-level { font-size: 11px; font-weight: 800; color: var(--neutral); letter-spacing: 1px; }
-.face-word { font-size: 30px; font-weight: 800; }
+.face-word {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
+}
 .face-pos { font-size: 13px; color: var(--neutral); font-style: italic; }
 .face-hint { font-size: 12px; color: var(--neutral); margin-top: 10px; }
 .face-tr { font-size: 22px; font-weight: 700; color: var(--ink); }
@@ -152,7 +161,7 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 
 .card-actions { display: flex; gap: 8px; }
 .btn {
-  flex: 1; border: 0; border-radius: 10px; padding: 12px 8px; font-size: 14px; font-weight: 700;
+  flex: 1; border: 0; border-radius: 10px; padding: 14px 8px; font-size: 14px; font-weight: 700;
   cursor: pointer; color: #fff;
 }
 .btn-good { background: var(--good); }
@@ -161,7 +170,7 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .btn-wide { width: 100%; flex: none; }
 .card-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
 .btn-ghost {
-  background: none; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  background: none; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
   font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor: pointer;
 }
 .card-pos { font-size: 13px; color: var(--ink-soft); }
@@ -178,16 +187,23 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center;
 }
 .quiz-level { font-size: 11px; font-weight: 800; color: var(--neutral); letter-spacing: 1px; }
-.quiz-word { font-size: 26px; font-weight: 800; }
-.quiz-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.quiz-word {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 30px; font-weight: 700;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
 .quiz-opt {
-  background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 15px 16px;
+  min-height: 52px; display: flex; align-items: center;
   font-size: 15px; text-align: left; cursor: pointer; color: var(--ink);
 }
 .quiz-opt.correct { background: #f0fdf4; border-color: var(--good); color: var(--good); font-weight: 700; }
 .quiz-opt.wrong { background: #fef2f2; border-color: var(--bad); color: var(--bad); font-weight: 700; }
 .quiz-opt:disabled { cursor: default; }
-.quiz-final { font-size: 32px; font-weight: 800; margin: 10px 0; }
+.quiz-final {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 36px; font-weight: 700; margin: 10px 0;
+}
 .quiz-best { font-size: 13px; color: var(--ink-soft); margin-bottom: 16px; }
 .quiz-wrong { text-align: left; margin: 14px 0; display: flex; flex-direction: column; gap: 6px; }
 .quiz-wrong .qw {
@@ -195,13 +211,49 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 }
 .quiz-wrong .qw b { color: var(--bad); }
 .quiz-wrong .qw span { color: var(--ink-soft); }
+.quiz-wrong .qw.is-blank b { color: var(--neutral); }
+.qw-tag {
+  font-style: normal; font-size: 11px; font-weight: 700; color: var(--neutral);
+  background: var(--line); padding: 1px 6px; border-radius: 999px; margin-left: 2px;
+}
+
+/* Test — soru süresi */
+.quiz-timer { display: flex; align-items: center; gap: 8px; margin: 10px 2px 0; }
+.quiz-timer-track {
+  flex: 1; height: 6px; background: var(--line); border-radius: 999px; overflow: hidden;
+}
+.quiz-timer-fill {
+  height: 100%; width: 100%; background: var(--good); border-radius: 999px;
+  transition: width 1s linear, background-color .3s;
+}
+.quiz-timer-fill.is-low { background: var(--bad); }
+.quiz-timer-num {
+  font-size: 12px; font-weight: 700; color: var(--ink-soft);
+  min-width: 20px; text-align: right; font-variant-numeric: tabular-nums;
+}
+
+/* Test — sonuç halkası + puan */
+.quiz-ring { position: relative; width: 150px; height: 150px; margin: 8px auto 4px; }
+.quiz-ring svg { display: block; }
+.quiz-ring #quizRingArc { transition: stroke-dashoffset .6s ease; }
+.quiz-ring-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+}
+.quiz-ring-score {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 30px; font-weight: 700; color: var(--ink);
+}
+.quiz-ring-pct { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+.quiz-points-big { font-size: 22px; font-weight: 800; margin: 6px 0 2px; }
+.quiz-streak-info { font-size: 13px; color: var(--ink-soft); margin-bottom: 14px; }
 
 /* Post üretici */
 .post-hint { font-size: 13px; color: var(--ink-soft); margin: 10px 2px; }
 .post-preview {
   background: #0b1020; border-radius: 14px; padding: 10px; display: flex; justify-content: center;
 }
-#postCanvas {
+#postCanvas, #cdCanvas {
   width: 100%; max-width: 360px; height: auto; border-radius: 8px; display: block;
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
@@ -256,7 +308,87 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .data-import-label { display: inline-flex; align-items: center; cursor: pointer; }
 .data-msg { font-size: 12px; color: var(--ink-soft); min-height: 16px; }
 
+/* Geri sayım postu */
+.countdown-box { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 16px; }
+.cd-fields { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.cd-fields label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink-soft); font-weight: 600; }
+.cd-fields input {
+  padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px;
+  font-family: inherit; color: var(--ink); background: #fff;
+}
+.cd-fields input:focus { border-color: var(--accent); outline: none; }
+.cd-info { font-size: 13px; color: var(--ink-soft); margin: 4px 2px 10px; font-weight: 600; }
+
 @media (min-width: 480px) {
   .face-word { font-size: 36px; }
-  #postCanvas { max-width: 400px; }
+  #postCanvas, #cdCanvas { max-width: 400px; }
 }
+
+/* Native (Capacitor) uygulamada Post sekmesi gizli — sadece çalışma aracı. */
+.is-native .tab[data-view="post"],
+.is-native #view-post { display: none !important; }
+
+/* "Bugün" kartı — günlük hedef + akıllı tekrar + hatırlatma */
+.daily-card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.daily-card:empty { display: none; }
+.daily-head { display: flex; align-items: center; justify-content: space-between; }
+.daily-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+.daily-gear {
+  border: 0; background: none; font-size: 15px; line-height: 1; cursor: pointer;
+  color: var(--ink-soft); padding: 2px 4px;
+}
+.daily-goal { display: flex; flex-direction: column; gap: 7px; }
+.daily-goal-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.daily-goal-label { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+.daily-stepper { display: flex; gap: 6px; flex-shrink: 0; }
+.daily-step {
+  width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 8px;
+  background: #fff; color: var(--ink); font-size: 16px; font-weight: 700; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.daily-bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.daily-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .35s; }
+.daily-bar-fill.is-done { background: var(--good); }
+.daily-review { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.daily-review-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+.daily-muted { color: var(--ink-soft); font-weight: 500; }
+.daily-btn {
+  border: 0; border-radius: 9px; padding: 10px 14px; font-size: 13px; font-weight: 700;
+  cursor: pointer; background: var(--accent); color: #fff; flex-shrink: 0;
+}
+.daily-btn-wide { width: 100%; }
+.daily-btn-good { background: var(--good); flex: 1; }
+.daily-btn-bad { background: var(--bad); flex: 1; }
+.daily-rcard {
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 18px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+}
+.daily-rword {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 24px; font-weight: 700; color: var(--ink);
+}
+.daily-rtr { font-size: 16px; color: var(--ink-soft); font-weight: 600; }
+.daily-ractions { display: flex; gap: 8px; }
+.daily-review-done {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-size: 14px; font-weight: 700; color: var(--good);
+}
+.daily-notif { display: flex; align-items: center; gap: 10px; }
+.daily-notif-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
+.daily-time {
+  border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; font-size: 13px;
+  font-family: inherit; color: var(--ink); background: #fff;
+}
+.daily-switch {
+  width: 40px; height: 24px; border-radius: 999px; border: 0; background: #cbd5e1;
+  position: relative; cursor: pointer; flex-shrink: 0; padding: 0;
+}
+.daily-switch.is-on { background: var(--good); }
+.daily-switch-knob {
+  position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 999px;
+  background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); transition: left .2s;
+}
+.daily-switch.is-on .daily-switch-knob { left: 19px; }

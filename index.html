@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0f172a" />
   <title>YDS Kelime — 100 Çıkmış Kelime</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400;1,500&display=swap" />
+  <link rel="stylesheet" href="fonts/playfair.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -33,14 +31,26 @@
   </header>
 
   <nav class="tabs" role="tablist">
-    <button class="tab is-active" data-view="list" role="tab">Liste</button>
-    <button class="tab" data-view="card" role="tab">Kart</button>
-    <button class="tab" data-view="quiz" role="tab">Test</button>
-    <button class="tab" data-view="post" role="tab">Post</button>
+    <button class="tab is-active" data-view="card" role="tab" aria-label="Kart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path></svg>
+      <span>Kart</span>
+    </button>
+    <button class="tab" data-view="quiz" role="tab" aria-label="Test">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      <span>Test</span>
+    </button>
+    <button class="tab" data-view="list" role="tab" aria-label="Liste">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+      <span>Liste</span>
+    </button>
+    <button class="tab" data-view="post" role="tab" aria-label="Post">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 15l5-5 4 4 3-3 6 6"></path><circle cx="9" cy="9" r="1.4"></circle></svg>
+      <span>Post</span>
+    </button>
   </nav>
 
   <section class="controls">
-    <input id="search" type="search" placeholder="Kelime veya anlam ara…" autocomplete="off" />
+    <input id="search" type="search" placeholder="Kelime veya anlam ara…" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="search" />
     <div class="levels" id="levelFilter">
       <button class="chip is-active" data-level="all">Hepsi</button>
       <button class="chip" data-level="A2">A2</button>
@@ -55,13 +65,14 @@
 
   <main id="main">
     <!-- LIST VIEW -->
-    <div id="view-list" class="view is-active">
+    <div id="view-list" class="view">
       <p id="listCount" class="list-count"></p>
       <ul id="wordList" class="word-list"></ul>
     </div>
 
     <!-- CARD VIEW -->
-    <div id="view-card" class="view">
+    <div id="view-card" class="view is-active">
+      <div id="dailyCard" class="daily-card"></div>
       <div id="cardEmpty" class="empty" hidden>Bu filtrede kelime yok.</div>
       <div id="cardStage" class="card-stage">
         <div id="flashcard" class="flashcard">
@@ -96,13 +107,17 @@
     <div id="view-quiz" class="view">
       <div id="quizIntro" class="quiz-intro">
         <h2>Test</h2>
-        <p>Seçili seviyeden 10 soruluk çoktan seçmeli test. İngilizce kelimenin Türkçe anlamını seç.</p>
+        <p>Seçili seviyeden 10 soruluk çoktan seçmeli test. Her soru için 30 saniye. Doğru + hızlı + seri = daha çok puan.</p>
         <button id="quizStart" class="btn btn-good btn-wide">Teste başla</button>
       </div>
       <div id="quizRun" class="quiz-run" hidden>
         <div class="quiz-top">
           <span id="quizProgress">1 / 10</span>
-          <span id="quizScore">Doğru: 0</span>
+          <span id="quizPoints">0 puan</span>
+        </div>
+        <div class="quiz-timer">
+          <div class="quiz-timer-track"><div id="quizTimerFill" class="quiz-timer-fill"></div></div>
+          <span id="quizTimerNum" class="quiz-timer-num">30</span>
         </div>
         <div class="quiz-question">
           <span class="quiz-level" id="quizLevel"></span>
@@ -113,8 +128,19 @@
       </div>
       <div id="quizResult" class="quiz-result" hidden>
         <h2>Sonuç</h2>
-        <p class="quiz-final" id="quizFinal"></p>
-        <p class="quiz-best" id="quizBest"></p>
+        <div class="quiz-ring">
+          <svg viewBox="0 0 120 120" width="150" height="150">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10"></circle>
+            <circle id="quizRingArc" cx="60" cy="60" r="52" fill="none" stroke="#16a34a" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.726" stroke-dashoffset="326.726" transform="rotate(-90 60 60)"></circle>
+          </svg>
+          <div class="quiz-ring-center">
+            <span id="quizRingScore" class="quiz-ring-score">0 / 10</span>
+            <span id="quizRingPct" class="quiz-ring-pct">%0</span>
+          </div>
+        </div>
+        <p id="quizPointsBig" class="quiz-points-big">0 puan</p>
+        <p id="quizBest" class="quiz-best"></p>
+        <p id="quizStreakInfo" class="quiz-streak-info"></p>
         <div id="quizWrong" class="quiz-wrong"></div>
         <button id="quizRetry" class="btn btn-good btn-wide">Tekrar dene</button>
       </div>
@@ -143,6 +169,20 @@
       </div>
 
       <button id="postDownload" class="btn btn-good btn-wide">PNG indir</button>
+
+      <div class="countdown-box">
+        <div class="post-queue-head"><strong>Geri sayım postu</strong></div>
+        <p class="post-hint">"YDS sınavına XX gün kaldı!" — kırmızı geri sayım postu. Sınav tarihi ÖSYM takvimine göre ön dolu; değişirse düzenle.</p>
+        <div class="cd-fields">
+          <label>Sınav adı<input id="cdLabel" type="text" value="YDS" /></label>
+          <label>Sınav tarihi<input id="cdDate" type="date" value="2026-11-22" /></label>
+        </div>
+        <p id="cdInfo" class="cd-info"></p>
+        <div class="post-preview">
+          <canvas id="cdCanvas" width="1080" height="1350"></canvas>
+        </div>
+        <button id="cdDownload" class="btn btn-good btn-wide">Geri sayım PNG indir</button>
+      </div>
 
       <div class="post-queue">
         <div class="post-queue-head">
@@ -195,8 +235,10 @@
     </details>
   </footer>
 
+  <script src="mobile.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
   <script src="post.js"></script>
+  <script src="daily.js"></script>
 </body>
 </html>

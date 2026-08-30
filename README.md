@@ -62,6 +62,14 @@ adresten çeker.
 - Yükleme kalıcı (yeniden yüklemede korunur) ama **tarayıcıya özeldir** — canlı siteyi
   güncellemek için `words.json`'ı indirip repoya commit etmek gerekir.
 
+### Geri sayım postu
+
+Post sekmesinin altında ayrı bölüm: "**YDS sınavına XX gün kaldı !**" — aynı İznik arka planı,
+büyük kırmızı serif sayı. "Sınav adı" (YDS/YÖKDİL…) + "Sınav tarihi" alanları; kalan gün otomatik
+hesaplanır, canlı önizleme, **Geri sayım PNG indir**. Tarih ÖSYM 2026 takvimine göre ön dolu
+(**YDS Sonbahar: 22 Kasım 2026**); ÖSYM değiştirirse alanı güncelle. Kaynak:
+<https://sdm.com.tr/yds-takvimi-osym/>, <https://yds.net/osym-2026-sinav-takvimi-aciklandi>
+
 ## Yerelde çalıştırma
 
 `fetch('words.json')` ve canvas'a resim çizimi nedeniyle `file://` ile açmak çalışmaz; yerel sunucu gerekir:

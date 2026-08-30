@@ -10,7 +10,7 @@
 
   var state = {
     words: [],
-    view: "list",
+    view: "card",
     level: "all",
     search: "",
     onlyUnlearned: false,
@@ -89,13 +89,19 @@
     el.quizResult = document.getElementById("quizResult");
     el.quizStart = document.getElementById("quizStart");
     el.quizProgress = document.getElementById("quizProgress");
-    el.quizScore = document.getElementById("quizScore");
+    el.quizPoints = document.getElementById("quizPoints");
+    el.quizTimerFill = document.getElementById("quizTimerFill");
+    el.quizTimerNum = document.getElementById("quizTimerNum");
     el.quizLevel = document.getElementById("quizLevel");
     el.quizWord = document.getElementById("quizWord");
     el.quizOptions = document.getElementById("quizOptions");
     el.quizNext = document.getElementById("quizNext");
-    el.quizFinal = document.getElementById("quizFinal");
+    el.quizRingArc = document.getElementById("quizRingArc");
+    el.quizRingScore = document.getElementById("quizRingScore");
+    el.quizRingPct = document.getElementById("quizRingPct");
+    el.quizPointsBig = document.getElementById("quizPointsBig");
     el.quizBest = document.getElementById("quizBest");
+    el.quizStreakInfo = document.getElementById("quizStreakInfo");
     el.quizWrong = document.getElementById("quizWrong");
     el.quizRetry = document.getElementById("quizRetry");
     // veri paneli
@@ -273,6 +279,7 @@
   /* ---------- views ---------- */
 
   function setView(v) {
+    if (v !== "quiz") clearQuestionTimer();
     state.view = v;
     el.tabs.forEach(function (t) {
       t.classList.toggle("is-active", t.getAttribute("data-view") === v);
@@ -361,6 +368,7 @@
     cb.addEventListener("change", function () {
       setLearned(w.id, cb.checked);
       li.classList.toggle("is-learned", cb.checked);
+      if (cb.checked) studied({ wordId: w.id, known: true, source: "list" });
     });
     check.appendChild(cb);
     check.appendChild(document.createTextNode("Öğrendim"));
@@ -416,6 +424,7 @@
     if (!state.cardDeck.length) return;
     var w = state.cardDeck[state.cardIndex];
     setLearned(w.id, known);
+    studied({ wordId: w.id, known: known, source: "card" });
     if (state.cardIndex < state.cardDeck.length - 1) {
       state.cardIndex++;
     }
@@ -428,16 +437,92 @@
 
   /* ---------- quiz ---------- */
 
-  var QUIZ_INTRO_TEXT = "Seçili seviyeden 10 soruluk çoktan seçmeli test. İngilizce kelimenin Türkçe anlamını seç.";
+  var QUIZ_INTRO_TEXT = "Seçili seviyeden 10 soruluk çoktan seçmeli test. Her soru için 30 saniye. Doğru + hızlı + seri = daha çok puan.";
+  var QUIZ_TIME = 30;
+  var RING_CIRC = 326.726; // 2 * PI * 52
 
   function resetQuizToIntro() {
+    clearQuestionTimer();
     el.quizIntro.hidden = false;
     el.quizRun.hidden = true;
     el.quizResult.hidden = true;
     el.quizIntro.querySelector("p").textContent = QUIZ_INTRO_TEXT;
   }
 
+  /* ---------- quiz: süre + puan yardımcıları ---------- */
+
+  function startQuestionTimer() {
+    clearQuestionTimer();
+    state.quiz.timeLeft = QUIZ_TIME;
+    updateTimerUI();
+    state.quiz.timerId = setInterval(function () {
+      state.quiz.timeLeft--;
+      updateTimerUI();
+      if (state.quiz.timeLeft <= 0) {
+        clearQuestionTimer();
+        timeoutQuestion();
+      }
+    }, 1000);
+  }
+
+  function clearQuestionTimer() {
+    if (state.quiz && state.quiz.timerId) {
+      clearInterval(state.quiz.timerId);
+      state.quiz.timerId = null;
+    }
+  }
+
+  function updateTimerUI() {
+    if (!state.quiz) return;
+    var t = Math.max(0, state.quiz.timeLeft);
+    if (el.quizTimerNum) el.quizTimerNum.textContent = t;
+    if (el.quizTimerFill) {
+      el.quizTimerFill.style.width = (t / QUIZ_TIME * 100) + "%";
+      el.quizTimerFill.classList.toggle("is-low", t <= 7);
+    }
+  }
+
+  function updatePointsUI() {
+    if (!el.quizPoints || !state.quiz) return;
+    var s = state.quiz.streak >= 2 ? "🔥" + state.quiz.streak + "  " : "";
+    el.quizPoints.textContent = s + fmtNum(state.quiz.points) + " puan";
+  }
+
+  function fmtNum(n) {
+    try { return n.toLocaleString("tr-TR"); } catch (e) { return String(n); }
+  }
+
+  function revealCorrect(q) {
+    var correctText = (q.word.tr || []).join(", ");
+    el.quizOptions.querySelectorAll(".quiz-opt").forEach(function (b) {
+      b.disabled = true;
+      if (b.textContent === correctText) b.classList.add("correct");
+    });
+  }
+
+  function timeoutQuestion() {
+    if (!state.quiz) return;
+    var idx = state.quiz.index;
+    var q = state.quiz.questions[idx];
+    if (q.answered) return;
+    q.answered = true;
+    q.correct = false;
+    q.blank = true;
+    state.quiz.streak = 0;
+    state.quiz.wrong.push({ word: q.word, blank: true });
+    revealCorrect(q);
+    updatePointsUI();
+    studied({ wordId: q.word.id, correct: false, source: "quiz" });
+    // yanıt verilmedi: kısa süre doğruyu göster, sonra otomatik ilerle
+    setTimeout(function () {
+      if (state.view === "quiz" && state.quiz && state.quiz.index === idx && !el.quizRun.hidden) {
+        nextQuizQuestion();
+      }
+    }, 1700);
+  }
+
   function startQuiz() {
+    clearQuestionTimer();
     var pool = filtered();
     if (pool.length < 4) {
       el.quizIntro.hidden = false;
@@ -449,9 +534,12 @@
     }
     var n = Math.min(10, pool.length);
     var questions = shuffled(pool).slice(0, n).map(function (w) {
-      return { word: w, options: makeOptions(w, pool), answered: false, correct: false };
+      return { word: w, options: makeOptions(w, pool), answered: false, correct: false, blank: false };
     });
-    state.quiz = { questions: questions, index: 0, score: 0, wrong: [] };
+    state.quiz = {
+      questions: questions, index: 0, score: 0, points: 0,
+      streak: 0, maxStreak: 0, wrong: [], timerId: null, timeLeft: QUIZ_TIME
+    };
     el.quizIntro.hidden = true;
     el.quizResult.hidden = true;
     el.quizRun.hidden = false;
@@ -471,7 +559,7 @@
   function renderQuizQuestion() {
     var q = state.quiz.questions[state.quiz.index];
     el.quizProgress.textContent = (state.quiz.index + 1) + " / " + state.quiz.questions.length;
-    el.quizScore.textContent = "Doğru: " + state.quiz.score;
+    updatePointsUI();
     el.quizLevel.textContent = q.word.level;
     el.quizWord.textContent = q.word.en;
     el.quizNext.hidden = true;
@@ -483,32 +571,37 @@
       b.addEventListener("click", function () { answerQuiz(opt, b); });
       el.quizOptions.appendChild(b);
     });
+    startQuestionTimer();
   }
 
   function answerQuiz(opt, btn) {
     var q = state.quiz.questions[state.quiz.index];
     if (q.answered) return;
+    clearQuestionTimer();
     q.answered = true;
     q.correct = opt.isCorrect;
-    var buttons = el.quizOptions.querySelectorAll(".quiz-opt");
-    buttons.forEach(function (b) {
-      b.disabled = true;
-      if (b.textContent === (q.word.tr || []).join(", ")) b.classList.add("correct");
-    });
+    revealCorrect(q);
     if (opt.isCorrect) {
+      var gained = 100 + Math.max(0, state.quiz.timeLeft) * 4 + state.quiz.streak * 15;
+      state.quiz.points += gained;
       state.quiz.score++;
+      state.quiz.streak++;
+      if (state.quiz.streak > state.quiz.maxStreak) state.quiz.maxStreak = state.quiz.streak;
       setLearned(q.word.id, true);
     } else {
       btn.classList.add("wrong");
-      state.quiz.wrong.push(q.word);
+      state.quiz.streak = 0;
+      state.quiz.wrong.push({ word: q.word, blank: false });
     }
-    el.quizScore.textContent = "Doğru: " + state.quiz.score;
+    updatePointsUI();
+    studied({ wordId: q.word.id, correct: opt.isCorrect, source: "quiz" });
     el.quizNext.hidden = false;
     el.quizNext.textContent =
       state.quiz.index === state.quiz.questions.length - 1 ? "Sonucu gör" : "Sonraki";
   }
 
   function nextQuizQuestion() {
+    clearQuestionTimer();
     if (state.quiz.index < state.quiz.questions.length - 1) {
       state.quiz.index++;
       renderQuizQuestion();
@@ -518,30 +611,44 @@
   }
 
   function finishQuiz() {
+    clearQuestionTimer();
     el.quizRun.hidden = true;
     el.quizResult.hidden = false;
     var total = state.quiz.questions.length;
     var score = state.quiz.score;
-    el.quizFinal.textContent = score + " / " + total;
+    var points = state.quiz.points;
+    var pct = Math.round(score / total * 100);
+
+    if (el.quizRingArc) el.quizRingArc.style.strokeDashoffset = String(RING_CIRC * (1 - pct / 100));
+    if (el.quizRingScore) el.quizRingScore.textContent = score + " / " + total;
+    if (el.quizRingPct) el.quizRingPct.textContent = "%" + pct;
 
     var best = loadJSON(LS_BEST, {});
     var key = state.level;
-    var pct = Math.round(score / total * 100);
-    var prevPct = best[key] ? best[key].pct : -1;
-    if (pct > prevPct) {
-      best[key] = { pct: pct, score: score, total: total, date: new Date().toISOString().slice(0, 10) };
+    var prev = best[key] || {};
+    var prevPoints = prev.points || 0;
+    var isRecord = points > prevPoints;
+    if (isRecord) {
+      best[key] = {
+        points: points, pct: pct, score: score, total: total,
+        maxStreak: state.quiz.maxStreak, date: new Date().toISOString().slice(0, 10)
+      };
       saveJSON(LS_BEST, best);
-      el.quizBest.textContent = "Yeni rekor! (" + labelLevel(key) + ")";
-    } else {
-      el.quizBest.textContent = "En iyi (" + labelLevel(key) + "): %" + best[key].pct;
     }
+    el.quizPointsBig.textContent = fmtNum(points) + " puan";
+    el.quizBest.textContent = isRecord
+      ? "🏆 Yeni rekor! (" + labelLevel(key) + ")"
+      : "En iyi (" + labelLevel(key) + "): " + fmtNum(Math.max(points, prevPoints)) + " puan";
+    el.quizStreakInfo.textContent = "En uzun seri: " + state.quiz.maxStreak + " doğru  ·  %" + pct + " isabet";
 
     el.quizWrong.innerHTML = "";
     if (state.quiz.wrong.length) {
-      state.quiz.wrong.forEach(function (w) {
+      state.quiz.wrong.forEach(function (item) {
+        var w = item.word || item;
         var d = document.createElement("div");
-        d.className = "qw";
-        d.innerHTML = "<b>" + esc(w.en) + "</b> — <span>" + esc((w.tr || []).join(", ")) + "</span>";
+        d.className = "qw" + (item.blank ? " is-blank" : "");
+        d.innerHTML = "<b>" + esc(w.en) + "</b> — <span>" + esc((w.tr || []).join(", ")) + "</span>" +
+          (item.blank ? ' <em class="qw-tag">boş</em>' : "");
         el.quizWrong.appendChild(d);
       });
     } else {
@@ -597,4 +704,9 @@
   }
 
   function labelLevel(k) { return k === "all" ? "Hepsi" : k; }
+
+  // "Bugün" kartı (daily.js) için: bir kelime çalışıldı sinyali
+  function studied(detail) {
+    try { document.dispatchEvent(new CustomEvent("yds:studied", { detail: detail })); } catch (e) {}
+  }
 })();

@@ -31,6 +31,7 @@
     loadQueue();
     loadStart();
     renderQueue();
+    renderCd();
     if (window.YDSWords && window.YDSWords.length) {
       setWords(window.YDSWords);
     } else {
@@ -62,6 +63,12 @@
     els.today = document.getElementById("postToday");
     els.todayLabel = document.getElementById("postTodayLabel");
     els.todayDownload = document.getElementById("postTodayDownload");
+    els.cdLabel = document.getElementById("cdLabel");
+    els.cdDate = document.getElementById("cdDate");
+    els.cdInfo = document.getElementById("cdInfo");
+    els.cdCanvas = document.getElementById("cdCanvas");
+    els.cdCtx = els.cdCanvas.getContext("2d");
+    els.cdDownload = document.getElementById("cdDownload");
   }
 
   function bind() {
@@ -95,16 +102,23 @@
       var i = todayIdx();
       if (i >= 0 && i < queue.length) downloadOne(queue[i], i);
     });
+
+    els.cdLabel.addEventListener("input", renderCd);
+    els.cdDate.addEventListener("input", renderCd);
+    els.cdDate.addEventListener("change", renderCd);
+    els.cdDownload.addEventListener("click", downloadCd);
   }
 
   function loadAssets() {
     bgImg = new Image();
-    bgImg.onload = function () { render(); };
-    bgImg.onerror = function () { render(); };
+    bgImg.onload = function () { render(); renderCd(); };
+    bgImg.onerror = function () { render(); renderCd(); };
     bgImg.src = "ydbackground.jpg";
 
     var specs = [
       '700 118px "Playfair Display"',
+      '700 400px "Playfair Display"',
+      '500 74px "Playfair Display"',
       '500 50px "Playfair Display"',
       'italic 500 50px "Playfair Display"',
       'italic 400 32px "Playfair Display"'
@@ -112,8 +126,8 @@
     if (document.fonts && document.fonts.load) {
       Promise.all(specs.map(function (s) { return document.fonts.load(s).catch(function () {}); }))
         .then(function () { return document.fonts.ready; })
-        .then(function () { fontsReady = true; render(); })
-        .catch(function () { fontsReady = true; render(); });
+        .then(function () { fontsReady = true; render(); renderCd(); })
+        .catch(function () { fontsReady = true; render(); renderCd(); });
     } else {
       fontsReady = true;
     }
@@ -169,11 +183,10 @@
     });
   }
 
-  function draw(m, ctx) {
-    ctx = ctx || els.ctx;
+  // ortak arka plan: İznik deseni cover + koyu alt gradyan + vinyet
+  function drawBackground(ctx) {
     ctx.clearRect(0, 0, W, H);
 
-    // arka plan (cover — tüm tuvali doldurur)
     if (bgImg && bgImg.complete && bgImg.naturalWidth) {
       drawCover(ctx, bgImg, W, H);
     } else {
@@ -181,11 +194,9 @@
       ctx.fillRect(0, 0, W, H);
     }
 
-    // desen canlı kalsın: sadece hafif bir birleştirici ton
     ctx.fillStyle = "rgba(9,13,44,0.12)";
     ctx.fillRect(0, 0, W, H);
 
-    // metnin oturduğu alt bölgeyi koyulaştır (okunurluk)
     var g = ctx.createLinearGradient(0, H * 0.30, 0, H);
     g.addColorStop(0, "rgba(5,8,26,0)");
     g.addColorStop(0.45, "rgba(5,8,26,0.45)");
@@ -194,12 +205,16 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    // köşe karartması (vinyet)
     var vg = ctx.createRadialGradient(W / 2, H * 0.42, H * 0.30, W / 2, H * 0.5, H * 0.75);
     vg.addColorStop(0, "rgba(0,0,0,0)");
     vg.addColorStop(1, "rgba(0,0,0,0.32)");
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, W, H);
+  }
+
+  function draw(m, ctx) {
+    ctx = ctx || els.ctx;
+    drawBackground(ctx);
 
     var serif = '"Playfair Display", Georgia, "Times New Roman", serif';
     ctx.textBaseline = "alphabetic";
@@ -510,5 +525,140 @@
       }, "image/png");
     }
     step();
+  }
+
+  /* ---------- geri sayım postu ---------- */
+
+  var cdQueued = false;
+
+  function daysUntil(iso) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return null;
+    var ex = new Date(iso + "T00:00:00");
+    if (isNaN(ex.getTime())) return null;
+    var now = new Date();
+    var t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var t1 = new Date(ex.getFullYear(), ex.getMonth(), ex.getDate()).getTime();
+    return Math.round((t1 - t0) / DAY);
+  }
+
+  function fmtLong(iso) {
+    var d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return iso || "";
+    try {
+      return d.toLocaleDateString("tr-TR", {
+        day: "numeric", month: "long", year: "numeric", weekday: "long"
+      });
+    } catch (e) { return iso || ""; }
+  }
+
+  function updateCdInfo() {
+    var days = daysUntil(els.cdDate.value);
+    if (days === null) { els.cdInfo.textContent = "Geçerli bir tarih seç."; return; }
+    els.cdInfo.textContent = fmtLong(els.cdDate.value) + " · " +
+      (days > 0 ? days + " gün kaldı" : days === 0 ? "sınav bugün" : "sınav geçti");
+  }
+
+  function renderCd() {
+    if (!els.cdCtx) return;
+    updateCdInfo();
+    if (cdQueued) return;
+    cdQueued = true;
+    requestAnimationFrame(function () {
+      cdQueued = false;
+      drawCountdown();
+    });
+  }
+
+  function drawCountdown() {
+    var ctx = els.cdCtx;
+    drawBackground(ctx);
+
+    // orta bandı biraz daha koyulaştır (metin ortada)
+    var mg = ctx.createLinearGradient(0, H * 0.16, 0, H * 0.88);
+    mg.addColorStop(0, "rgba(4,6,22,0)");
+    mg.addColorStop(0.5, "rgba(4,6,22,0.55)");
+    mg.addColorStop(1, "rgba(4,6,22,0)");
+    ctx.fillStyle = mg;
+    ctx.fillRect(0, 0, W, H);
+
+    var serif = '"Playfair Display", Georgia, "Times New Roman", serif';
+    var label = (els.cdLabel.value || "YDS").trim() || "YDS";
+    var days = daysUntil(els.cdDate.value);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    ctx.shadowColor = "rgba(0,0,0,0.6)";
+    ctx.shadowBlur = 24;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+
+    var cx = W / 2;
+    var red = "#e4322b";
+
+    if (days === null) {
+      ctx.font = "italic 500 52px " + serif;
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      ctx.fillText("Sınav tarihi seç", cx, H / 2);
+      cdReset(ctx);
+      return;
+    }
+
+    if (days <= 0) {
+      ctx.fillStyle = "rgba(255,255,255,0.96)";
+      ctx.font = "500 84px " + serif;
+      ctx.fillText(label + " sınavı", cx, H * 0.47);
+      ctx.fillStyle = red;
+      ctx.font = "700 132px " + serif;
+      ctx.shadowBlur = 34;
+      ctx.fillText(days === 0 ? "bugün!" : "geçti", cx, H * 0.60);
+      cdReset(ctx);
+      return;
+    }
+
+    // üst satır
+    ctx.fillStyle = "rgba(255,255,255,0.96)";
+    ctx.font = "500 74px " + serif;
+    ctx.fillText(label + " sınavına", cx, H * 0.34);
+
+    // büyük sayı — kırmızı
+    var numSize = fitFont(ctx, String(days), "700", serif, 400, 150, W - 150);
+    ctx.font = "700 " + numSize + "px " + serif;
+    ctx.fillStyle = red;
+    ctx.shadowBlur = 36;
+    ctx.fillText(String(days), cx, H * 0.585);
+    ctx.shadowBlur = 24;
+
+    // alt satır
+    ctx.fillStyle = "rgba(255,255,255,0.96)";
+    ctx.font = "500 74px " + serif;
+    ctx.fillText("gün kaldı !", cx, H * 0.70);
+
+    // tarih
+    ctx.fillStyle = "rgba(255,255,255,0.62)";
+    ctx.font = "italic 400 34px " + serif;
+    ctx.fillText(fmtLong(els.cdDate.value), cx, H * 0.785);
+
+    cdReset(ctx);
+  }
+
+  function cdReset(ctx) {
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.textAlign = "left";
+  }
+
+  function downloadCd() {
+    var days = daysUntil(els.cdDate.value);
+    els.cdCanvas.toBlob(function (blob) {
+      if (!blob) return;
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "yds-geri-sayim-" + (days != null && days > 0 ? days + "-gun" : "post") + ".png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    }, "image/png");
   }
 })();
