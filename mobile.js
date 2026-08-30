@@ -1,4 +1,4 @@
-/* YDS Kelime — native (Capacitor) köprüsü.
+/* YDS365 Kelime Çalışması — native (Capacitor) köprüsü.
    Web'de HİÇBİR ŞEY yapmaz. Sadece Android/iOS kabuğunda çalışır.
    app.js ve post.js'e dokunmadan:
      - şifre kapısını atlar (auth.js zaten kontrol ediyor, bu yedek)

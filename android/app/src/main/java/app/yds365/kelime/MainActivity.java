@@ -1,4 +1,4 @@
-package com.ydskelime.app;
+package app.yds365.kelime;
 
 import com.getcapacitor.BridgeActivity;
 

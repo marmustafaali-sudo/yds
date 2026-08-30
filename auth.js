@@ -1,4 +1,4 @@
-/* YDS Kelime — basit şifre kapısı.
+/* YDS365 Kelime Çalışması — basit şifre kapısı.
    NOT: Bu istemci tarafı bir engeldir, gerçek güvenlik değil (kaynak koddan aşılabilir).
    Gerçek koruma için Cloudflare Access kullan. Şifre yalnızca SHA-256 özeti olarak tutulur. */
 (function () {

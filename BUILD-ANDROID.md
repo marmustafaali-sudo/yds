@@ -1,4 +1,4 @@
-# YDS Kelime — Android derleme
+# YDS365 Kelime Çalışması — Android derleme
 
 Capacitor ile mevcut web uygulamasını saran native Android projesi.
 Web dosyaları repo kökünde kalır (Cloudflare Pages), `www/` sadece derleme çıktısıdır.
@@ -76,13 +76,17 @@ cd android
 
 `android/app/build.gradle` → `versionCode` (her yüklemede +1) ve `versionName`.
 
-## Play Store kontrol listesi (kullanıcı)
+## Play Store kontrol listesi
+
+Tüm mağaza malzemeleri ayrı klasörde: **`play-store/`** (metinler, grafikler,
+Veri Güvenliği + içerik derecelendirme cevapları, AAB adımları).
 
 - [ ] Google Play Console hesabı (25 $ tek sefer)
-- [ ] Nihai `appId` (şu an geçici `com.ydskelime.app` — ilk yüklemeden sonra sabit)
-- [ ] Uygulama adı, kısa + uzun açıklama
-- [ ] Ekran görüntüleri (emülatör/cihazdan), 512×512 ikon, 1024×500 öne çıkan görsel
-- [ ] İçerik derecelendirme anketi
-- [ ] "Veri güvenliği" formu → **veri toplanmıyor** (bkz. `privacy.html`)
+- [x] Nihai `appId`: **`app.yds365.kelime`** (ilk yüklemeden sonra sabit)
+- [x] Uygulama adı: **YDS365 Kelime Çalışması**
+- [ ] Ekran görüntüleri (cihazdan) — bkz. `play-store/listing/screenshots/`
+- [x] 512×512 ikon + 1024×500 öne çıkan görsel — `play-store/listing/graphics/`
+- [ ] İçerik derecelendirme anketi — cevaplar `play-store/content-rating.md`
+- [ ] "Veri güvenliği" formu → **veri toplanmıyor** — `play-store/data-safety.md`
 - [ ] Gizlilik politikası URL'si: `https://yds.pages.dev/privacy.html`
 - [ ] Önce "Internal testing" kanalına yükleyip cihazda dene

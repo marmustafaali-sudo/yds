@@ -1,4 +1,4 @@
-/* YDS Kelime Çalışma — statik, çerçevesiz. Veri: words.json, ilerleme: localStorage. */
+/* YDS365 Kelime Çalışması — statik, çerçevesiz. Veri: words.json, ilerleme: localStorage. */
 (function () {
   "use strict";
 
@@ -177,7 +177,7 @@
 
   function exportWords() {
     downloadJSON({
-      meta: { title: "YDS Kelime", exportedAt: new Date().toISOString(), count: state.words.length },
+      meta: { title: "YDS365 Kelime Çalışması", exportedAt: new Date().toISOString(), count: state.words.length },
       words: state.words
     }, "words.json");
     if (el.dataMsg) el.dataMsg.textContent = "words.json indirildi — repoya koyup GitHub'a push et.";

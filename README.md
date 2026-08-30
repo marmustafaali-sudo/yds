@@ -1,4 +1,4 @@
-# YDS Kelime Çalışma
+# YDS365 Kelime Çalışması
 
 Geçmiş YDS/YÖKDİL sınavlarında sık geçen **100 kelime** için çerçevesiz, statik bir web uygulaması.
 Kelime listesi + seviye filtresi + arama, flashcard modu ve 10 soruluk çoktan seçmeli test.

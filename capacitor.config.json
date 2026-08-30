@@ -1,6 +1,6 @@
 {
-  "appId": "com.ydskelime.app",
-  "appName": "YDS Kelime",
+  "appId": "app.yds365.kelime",
+  "appName": "YDS365 Kelime Çalışması",
   "webDir": "www",
   "plugins": {
     "SplashScreen": {

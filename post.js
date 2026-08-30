@@ -1,4 +1,4 @@
-/* YDS Kelime — Instagram post üretici (Faz 2+3).
+/* YDS365 Kelime Çalışması — Instagram post üretici (Faz 2+3).
    1080x1350 canvas, ydbackground.jpg + koyu katman + serif metin. örnek.jpg düzeni. */
 (function () {
   "use strict";

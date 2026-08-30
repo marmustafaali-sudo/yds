@@ -1,4 +1,4 @@
-/* YDS Kelime — "Bugün" kartı: günlük hedef + akıllı tekrar (Leitner) + hatırlatma bildirimi.
+/* YDS365 Kelime Çalışması — "Bugün" kartı: günlük hedef + akıllı tekrar (Leitner) + hatırlatma bildirimi.
    Kart ekranının üstünde #dailyCard içine render eder. app.js "yds:studied" olayını dinler. */
 (function () {
   "use strict";
@@ -330,7 +330,7 @@
       return ln.schedule({
         notifications: [{
           id: NOTIF_ID,
-          title: "YDS Kelime",
+          title: "YDS365 Kelime Çalışması",
           body: "Bugünkü kelime hedefini ve tekrarını unutma 👋",
           schedule: { on: { hour: hm.hour, minute: hm.minute }, repeats: true, allowWhileIdle: true }
         }]
