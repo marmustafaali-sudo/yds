@@ -88,5 +88,5 @@ Veri Güvenliği + içerik derecelendirme cevapları, AAB adımları).
 - [x] 512×512 ikon + 1024×500 öne çıkan görsel — `play-store/listing/graphics/`
 - [ ] İçerik derecelendirme anketi — cevaplar `play-store/content-rating.md`
 - [ ] "Veri güvenliği" formu → **veri toplanmıyor** — `play-store/data-safety.md`
-- [ ] Gizlilik politikası URL'si: `https://yds.pages.dev/privacy.html`
+- [x] Gizlilik politikası URL'si: `https://marmustafaali-sudo.github.io/yds/privacy.html`
 - [ ] Önce "Internal testing" kanalına yükleyip cihazda dene

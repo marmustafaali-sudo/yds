@@ -57,8 +57,8 @@ Etiketler (varsa): sınav hazırlık, kelime, İngilizce, YDS, YÖKDİL
 
 ## İletişim
 - E-posta: `mar.mustafa.ali@gmail.com`
-- Web sitesi: (isteğe bağlı) `https://yds.pages.dev`
-- Gizlilik politikası: `https://yds.pages.dev/privacy.html`
+- Web sitesi: (isteğe bağlı — boş bırakılabilir)
+- Gizlilik politikası: `https://marmustafaali-sudo.github.io/yds/privacy.html`
 
 ## Grafik varlıklar
 | Öğe | Dosya | Boyut |

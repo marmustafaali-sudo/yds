@@ -10,7 +10,7 @@ Uygulama kodu repo kökünde; burası yalnızca mağaza malzemeleri.
 | Kategori | Eğitim (Education) |
 | Ücret | Ücretsiz, reklam yok, uygulama içi satın alma yok |
 | Hedef kitle | 13+ (yetişkin sınav adayları); içerik her yaşa uygun |
-| Gizlilik politikası | https://yds.pages.dev/privacy.html |
+| Gizlilik politikası | https://marmustafaali-sudo.github.io/yds/privacy.html |
 
 ## Klasör içeriği
 

@@ -11,7 +11,7 @@ Adım adım. Kutucukları işaretleyerek ilerle. Kod tarafı hazır; kalanlar a�
 | [x] | Mağaza metinleri — `listing/store-listing-tr.md` |
 | [x] | Veri güvenliği + içerik derecelendirme cevapları hazır |
 | [ ] | Play Console hesabı (25 $ + kimlik doğrulama) |
-| [ ] | Gizlilik politikası canlı URL |
+| [x] | Gizlilik politikası canlı URL — `https://marmustafaali-sudo.github.io/yds/privacy.html` |
 | [ ] | Yükleme anahtarı (keystore) |
 | [ ] | İmzalı AAB |
 | [ ] | Ekran görüntüleri (en az 2, telefon) |
@@ -28,13 +28,10 @@ Adım adım. Kutucukları işaretleyerek ilerle. Kod tarafı hazır; kalanlar a�
   en az 12 tester × 14 gün** isteyebilir. Hesap açılınca panelde yazan güncel
   şartı birlikte kontrol ederiz.
 
-### 0.2 — Gizlilik politikasını yayına al
-- `privacy.html` GitHub'da (push edildi).
-- Tarayıcında aç: `https://yds.pages.dev/privacy.html`
-  - **Açılıyorsa** → bu URL'yi formda kullanacağız, bitti.
-  - **Açılmıyorsa** → Cloudflare Pages projesini kontrol et / yeniden deploy et.
-    Alternatif: GitHub Pages ya da tek sayfalık herhangi bir statik host.
-- Canlı olmadan gönderim reddedilir.
+### 0.2 — Gizlilik politikasını yayına al  ✅ HAZIR
+- GitHub Pages ile yayında: **`https://marmustafaali-sudo.github.io/yds/privacy.html`**
+- Kaynak: `docs/` klasörü (`main` dalı), repo public.
+- Değişince: `privacy.html` → `docs/index.html` + `docs/privacy.html` kopyala, push et; Pages otomatik günceller.
 
 ### 0.3 — Yükleme anahtarı üret  (SEN çalıştırırsın, tek sefer)
 Bu oturumda `!` ile:
