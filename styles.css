@@ -324,9 +324,10 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   #postCanvas, #cdCanvas { max-width: 400px; }
 }
 
-/* Native (Capacitor) uygulamada Post sekmesi gizli — sadece çalışma aracı. */
+/* Native (Capacitor) uygulamada Post sekmesi + veri paneli gizli — içerik araçları. */
 .is-native .tab[data-view="post"],
-.is-native #view-post { display: none !important; }
+.is-native #view-post,
+.is-native .app-footer { display: none !important; }
 
 /* "Bugün" kartı — günlük hedef + akıllı tekrar + hatırlatma */
 .daily-card {
