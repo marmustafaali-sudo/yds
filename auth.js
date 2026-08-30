@@ -12,6 +12,13 @@
     var gate = document.getElementById("authGate");
     if (!gate) return;
 
+    // Native (Capacitor) kabuğunda şifre kapısı yok — cihaz zaten kullanıcının.
+    if (window.Capacitor && typeof window.Capacitor.isNativePlatform === "function"
+        && window.Capacitor.isNativePlatform()) {
+      if (gate.parentNode) gate.parentNode.removeChild(gate);
+      return;
+    }
+
     var ok = false;
     try { ok = sessionStorage.getItem(SKEY) === "1"; } catch (e) {}
     if (ok) { gate.parentNode.removeChild(gate); return; }

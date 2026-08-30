@@ -1,0 +1,13 @@
+{
+  "appId": "com.ydskelime.app",
+  "appName": "YDS Kelime",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#0f172a",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash"
+    }
+  }
+}
