@@ -16,6 +16,8 @@ const FILES = [
   "styles.css",
   "words.json",
   "ydbackground.jpg",
+  "ydbg-soft.jpg",
+  "lale-header.jpg",
 ];
 const DIRS = ["fonts"];
 

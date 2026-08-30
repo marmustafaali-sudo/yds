@@ -314,7 +314,9 @@
   function renderProgress() {
     var total = state.words.length;
     var done = state.words.filter(function (w) { return state.learned[w.id]; }).length;
-    el.progressText.textContent = done + " / " + total + " öğrenildi";
+    el.progressText.textContent = done > 0
+      ? done + " kelime öğrenildi · YDS'de çıkan sık kelimeler"
+      : "YDS'de çıkan sık kelimeler";
     el.progressFill.style.width = total ? (done / total * 100) + "%" : "0%";
   }
 
