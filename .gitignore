@@ -26,3 +26,6 @@ play-store/build/*.apk
 
 # /design tasarım tuvali çalışma dosyaları (tuval claude.ai'da yaşar)
 design/
+
+# Ham ekran görüntüleri (işlenmişler listing/screenshots/ altında)
+play-store/listing/screenshots/raw/
