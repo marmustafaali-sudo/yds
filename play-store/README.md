@@ -34,14 +34,16 @@ play-store/
 
 ## Sıra
 
-1. **AAB üret** — `build/BUILD-AAB.md`. Çıkan `app-release.aab` dosyasını `build/` içine koy.
-2. **Play Console → Uygulama oluştur** — ad `YDS365 Kelime Çalışması`, dil Türkçe, ücretsiz.
-3. **Mağaza kaydı** — `listing/store-listing-tr.md` metinlerini yapıştır, `listing/graphics/` görsellerini yükle, en az 2 telefon ekran görüntüsü ekle (`listing/screenshots/`).
-4. **Veri güvenliği formu** — `data-safety.md` (hepsi "hayır / veri toplanmıyor").
-5. **İçerik derecelendirme** — `content-rating.md` cevaplarıyla anketi doldur.
-6. **Gizlilik politikası URL'si** — yukarıdaki bağlantı; sayfanın yayında olduğunu doğrula.
-7. **Sürüm → Kapalı test (Internal testing)** — AAB'yi yükle, kendi cihazında dene.
-8. Sorun yoksa **Üretim (Production)** kanalına gönder.
+Adım adım tam plan: **`UPLOAD-PLAN.md`** (kutucuklu, her Console ekranında ne girileceğiyle).
+
+Özet:
+1. **Aşama 0 — Hazırlık**: Play Console hesabı (25 $, kimlik onayı 1–3 gün) · gizlilik URL'si canlı · keystore üret · imzalı AAB · ekran görüntüleri
+2. **Aşama 1** — Console'da uygulamayı oluştur
+3. **Aşama 2** — Uygulama içeriği formları (`data-safety.md`, `content-rating.md`)
+4. **Aşama 3** — Mağaza kaydı (`listing/`)
+5. **Aşama 4** — Kapalı test sürümü (AAB yükle)
+6. **Aşama 5** — Cihazda test
+7. **Aşama 6** — Üretime yükselt, yayına sun
 
 > Not: Play App Signing açık bırak (varsayılan). Yükleme anahtarını (`.jks`) ve
 > parolalarını güvenli yerde sakla — kaybolursa güncelleme gönderilemez.
