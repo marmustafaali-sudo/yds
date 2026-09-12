@@ -1,0 +1,11 @@
+name = "yds"
+compatibility_date = "2026-09-12"
+
+# Statik site (Post üretici + words.json çalışma uygulaması). Sunucu tarafı
+# Worker kodu yok — sadece www/ içindeki dosyalar servis ediliyor.
+# www/ repoya commit edilmiyor (bkz. .gitignore); Cloudflare Workers Builds
+# her push'ta önce `npm run build` (= scripts/copy-web.mjs) çalıştırıp
+# www/ klasörünü üretir, sonra buradaki dosyaları deploy eder.
+[assets]
+directory = "./www"
+not_found_handling = "404-page"
