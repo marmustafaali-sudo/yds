@@ -4,8 +4,12 @@
   "use strict";
 
   var W = 1080, H = 1350;
-  var MARGIN = 96;
-  var TEXT_W = W - MARGIN - 90;
+  // MARGIN: yatay güvenli pay. Instagram Story'de "cover" ölçeklemesi 9:16'dan
+  // daha uzun telefon ekranlarında (19.5:9 / 20:9, çok yaygın) görüntünün her
+  // iki yanından ~%11-13 kırpar; profil grid'in kare küçük resmi de kenara
+  // yakın metni törpüler. 150px (~%13.9) bu en kötü senaryoyu karşılar.
+  var MARGIN = 150;
+  var TEXT_W = W - MARGIN * 2;
 
   // Instagram Hikaye (Story) boyutu: 9:16. Aynı tasarım, dikeyde ortalanmış çiziliyor
   // ki üst/alt IG arayüzü (profil / cevap kutusu) metnin üstüne binmesin.
@@ -269,7 +273,7 @@
       y += 92;
       ctx.font = "italic 500 50px " + serif;
       ctx.fillStyle = "rgba(255,255,255,0.96)";
-      y = wrapText(ctx, m.tr, MARGIN, y, 820, 66);
+      y = wrapText(ctx, m.tr, MARGIN, y, TEXT_W, 66);
     }
 
     // ince çizgi
@@ -286,14 +290,14 @@
     if (m.exEn) {
       ctx.font = "italic 400 33px " + serif;
       ctx.fillStyle = "rgba(255,255,255,0.88)";
-      y = wrapText(ctx, m.exEn, MARGIN, y, 860, 47);
+      y = wrapText(ctx, m.exEn, MARGIN, y, TEXT_W, 47);
       y += 12;
     }
     // örnek cümle TR
     if (m.exTr) {
       ctx.font = "400 30px " + serif;
       ctx.fillStyle = "rgba(255,255,255,0.68)";
-      y = wrapText(ctx, m.exTr, MARGIN, y, 860, 44);
+      y = wrapText(ctx, m.exTr, MARGIN, y, TEXT_W, 44);
     }
 
     ctx.shadowColor = "transparent";
@@ -686,7 +690,7 @@
     ctx.fillText(label + " sınavına", cx, hh * 0.34);
 
     // büyük sayı — kırmızı
-    var numSize = fitFont(ctx, String(days), "700", serif, 400, 150, W - 150);
+    var numSize = fitFont(ctx, String(days), "700", serif, 400, 150, TEXT_W);
     ctx.font = "700 " + numSize + "px " + serif;
     ctx.fillStyle = red;
     ctx.shadowBlur = 36;
