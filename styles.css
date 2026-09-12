@@ -361,6 +361,23 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .data-import-label { display: inline-flex; align-items: center; cursor: pointer; }
 .data-msg { font-size: 12px; color: var(--ink-soft); min-height: 16px; }
 
+/* Instagram açıklaması (caption + hashtag) */
+.caption-box { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 16px; }
+.caption-textarea {
+  width: 100%; margin-top: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 14px; font-family: inherit; color: var(--ink); background: #fff; resize: vertical;
+  line-height: 1.5; box-sizing: border-box;
+}
+.caption-textarea:focus { border-color: var(--accent); outline: none; }
+#captionCopy { flex: 1; }
+#captionCopy.is-copied { background: var(--good); }
+.caption-hashtag-edit { margin-top: 10px; font-size: 13px; color: var(--ink-soft); }
+.caption-hashtag-edit summary { cursor: pointer; padding: 6px 0; font-weight: 600; }
+.caption-hashtag-edit textarea {
+  width: 100%; margin-top: 6px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 13px; font-family: inherit; color: var(--ink); background: #fff; resize: vertical; box-sizing: border-box;
+}
+
 /* Geri sayım postu */
 .countdown-box { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 16px; }
 .cd-fields { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }

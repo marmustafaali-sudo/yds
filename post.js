@@ -18,6 +18,10 @@
 
   var QKEY = "yds.postQueue.v1";
   var SKEY = "yds.postStart.v1";
+  var HKEY = "yds.captionHashtags.v1";
+  var DEFAULT_HASHTAGS = "#yds #yökdil #ingilizce #ingilizcekelime #kelime #ösym " +
+    "#sınavhazırlık #dilöğren #ingilizceöğren #vocabulary #englishvocabulary " +
+    "#studyenglish #yabancıdil #ydskelime";
   var DAY = 86400000;
 
   var els = {};
@@ -46,6 +50,7 @@
     loadStart();
     renderQueue();
     renderCd();
+    els.captionHashtags.value = loadHashtags();
     if (window.YDSWords && window.YDSWords.length) {
       setWords(window.YDSWords);
     } else {
@@ -86,12 +91,16 @@
     els.cdCtx = els.cdCanvas.getContext("2d");
     els.cdDownload = document.getElementById("cdDownload");
     els.cdDownloadStory = document.getElementById("cdDownloadStory");
+    els.captionText = document.getElementById("captionText");
+    els.captionHashtags = document.getElementById("captionHashtags");
+    els.captionRegen = document.getElementById("captionRegen");
+    els.captionCopy = document.getElementById("captionCopy");
   }
 
   function bind() {
     els.select.addEventListener("change", function () {
       var w = words[+els.select.value];
-      if (w) { current = w; fillFields(w); render(); }
+      if (w) { current = w; fillFields(w); render(); renderCaption(); }
     });
     els.prev.addEventListener("click", function () { step(-1); });
     els.next.addEventListener("click", function () { step(1); });
@@ -105,6 +114,13 @@
     });
     els.download.addEventListener("click", download);
     els.downloadStory.addEventListener("click", downloadStory);
+
+    els.captionRegen.addEventListener("click", renderCaption);
+    els.captionCopy.addEventListener("click", copyCaption);
+    els.captionHashtags.addEventListener("input", function () {
+      saveHashtags(els.captionHashtags.value);
+      renderCaption();
+    });
 
     els.qAdd.addEventListener("click", function () { addModel(model()); });
     els.qBulk.addEventListener("click", function () { bulkAdd(els.qBulkLevel.value); });
@@ -169,6 +185,7 @@
       current = words[0];
       els.select.value = 0;
       fillFields(current);
+      renderCaption();
     }
     render();
   }
@@ -384,6 +401,69 @@
     return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "post";
   }
 
+  /* ---------- Instagram açıklaması (caption) + hashtag ---------- */
+
+  function loadHashtags() {
+    try {
+      var v = localStorage.getItem(HKEY);
+      if (v && v.trim()) return v;
+    } catch (e) {}
+    return DEFAULT_HASHTAGS;
+  }
+
+  function saveHashtags(v) {
+    try { localStorage.setItem(HKEY, v); } catch (e) {}
+  }
+
+  function buildCaption(m) {
+    if (!m || !m.word) return "";
+    var word = m.word.trim().toLowerCase();
+    var lines = [];
+    lines.push("📚 Bugünün YDS kelimesi: " + word);
+    if (m.tr) lines.push("🇹🇷 " + m.tr);
+    lines.push("");
+    if (m.exEn) lines.push("💬 " + m.exEn);
+    if (m.exTr) lines.push("🔎 " + m.exTr);
+    lines.push("");
+    lines.push("Her gün 1 kelime, YDS'ye adım adım hazırlan! 🎯");
+    lines.push("Profildeki linkten kelime çalışma uygulamasını dene 👆");
+    var tags = (els.captionHashtags.value || DEFAULT_HASHTAGS).trim();
+    if (tags) { lines.push(""); lines.push(tags); }
+    return lines.join("\n");
+  }
+
+  function renderCaption() {
+    if (!els.captionText) return;
+    els.captionText.value = buildCaption(model());
+  }
+
+  function copyCaption() {
+    var text = els.captionText.value;
+    if (!text) return;
+    var done = function () {
+      els.captionCopy.textContent = "✓ Kopyalandı";
+      els.captionCopy.classList.add("is-copied");
+      setTimeout(function () {
+        els.captionCopy.textContent = "📋 Kopyala";
+        els.captionCopy.classList.remove("is-copied");
+      }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+
+  function fallbackCopy(text, done) {
+    try {
+      els.captionText.focus();
+      els.captionText.select();
+      document.execCommand("copy");
+      done();
+    } catch (e) {}
+  }
+
   /* ---------- günlük takvim (post kuyruğu) ---------- */
 
   function loadQueue() {
@@ -477,6 +557,7 @@
     els.fExTr.value = m.exTr || "";
     els.fMark.value = m.mark || "";
     render();
+    renderCaption();
   }
 
   function renderQueue() {
