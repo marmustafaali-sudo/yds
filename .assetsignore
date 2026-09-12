@@ -1,0 +1,22 @@
+# Cloudflare Workers assets deploy — repo kökünden yayınlanıyor, bunlar hariç.
+# (.gitignore ile aynı sözdizimi.)
+
+node_modules/
+android/
+play-store/
+scripts/
+design/
+docs/
+www/
+assets/
+.git/
+
+*.md
+*.jks
+*.keystore
+package.json
+package-lock.json
+wrangler.toml
+capacitor.config.json
+örnek.jpg
+ydsapp.txt
