@@ -29,3 +29,7 @@ design/
 
 # Ham ekran görüntüleri (işlenmişler listing/screenshots/ altında)
 play-store/listing/screenshots/raw/
+
+# Ham sınav PDF'leri (telifli ÖSYM kağıtları) — sadece questions.json'a
+# çıkarılan veri repoya girer, kaynak PDF'ler girmez.
+sınavlar/
