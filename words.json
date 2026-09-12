@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "YDS Çıkmış Kelimeler — 100 Kelime",
-    "note": "Geçmiş YDS/YÖKDİL sınavlarında sık geçen kelimelerden derlenmiştir. Seviyeler CEFR (A2-C1) yaklaşık değerlerdir.",
+    "title": "YDS Çıkmış Kelimeler",
+    "note": "Geçmiş YDS/YÖKDİL sınavlarında sık geçen kelimelerden derlenmiştir. Seviyeler CEFR (A2-C1) yaklaşık değerlerdir. id 101-109: 2023-2025 e-YDS'de (18 oturum) birden fazla kez doğru cevap kelimesi olarak çıkmış, önceki listede olmayan kelimeler (kaynak: sınavlar/5315b7df3960ccb7.pdf, TR anlam + eş anlamlı gerçek veri; örnek cümleler sonradan eklendi).",
     "sources": [
       "https://evdeingilizcem.com/ydsde-en-cok-cikan-kelimeler/",
       "https://diziyleogren.com/blog/yds-yokdil-sinavlarinda-en-cok-cikmis-600-kelime-listesi",
@@ -111,6 +111,15 @@
     { "id": 97, "en": "foster", "pos": "verb", "level": "C1", "tr": ["beslemek", "teşvik etmek", "geliştirmek"], "example_en": "The programme fosters cooperation between universities.", "example_tr": "Program, üniversiteler arası iş birliğini teşvik eder.", "synonyms": ["encourage", "promote"] },
     { "id": 98, "en": "jeopardize", "pos": "verb", "level": "C1", "tr": ["tehlikeye atmak", "riske sokmak"], "example_en": "One careless remark could jeopardize the whole deal.", "example_tr": "Dikkatsiz bir söz tüm anlaşmayı tehlikeye atabilir.", "synonyms": ["endanger", "imperil"] },
     { "id": 99, "en": "ambiguous", "pos": "adjective", "level": "C1", "tr": ["belirsiz", "muğlak", "iki anlamlı"], "example_en": "The instructions were ambiguous and confused everyone.", "example_tr": "Talimatlar muğlaktı ve herkesin kafasını karıştırdı.", "synonyms": ["vague", "unclear"] },
-    { "id": 100, "en": "compelling", "pos": "adjective", "level": "C1", "tr": ["inandırıcı", "ikna edici", "sürükleyici"], "example_en": "The lawyer presented a compelling argument to the jury.", "example_tr": "Avukat jüriye ikna edici bir argüman sundu.", "synonyms": ["convincing", "persuasive"] }
+    { "id": 100, "en": "compelling", "pos": "adjective", "level": "C1", "tr": ["inandırıcı", "ikna edici", "sürükleyici"], "example_en": "The lawyer presented a compelling argument to the jury.", "example_tr": "Avukat jüriye ikna edici bir argüman sundu.", "synonyms": ["convincing", "persuasive"] },
+    { "id": 101, "en": "ward off", "pos": "phrasal verb", "level": "C1", "tr": ["savmak", "engellemek", "defetmek"], "example_en": "Regular exercise can help ward off illness.", "example_tr": "Düzenli egzersiz hastalıkları savuşturmaya yardımcı olabilir.", "synonyms": ["defend against", "protect against"] },
+    { "id": 102, "en": "adoption", "pos": "noun", "level": "B1", "tr": ["benimseme", "kabullenme"], "example_en": "The adoption of new technology has transformed the industry.", "example_tr": "Yeni teknolojinin benimsenmesi sektörü dönüştürdü.", "synonyms": ["acceptance", "approval"] },
+    { "id": 103, "en": "progressively", "pos": "adverb", "level": "B2", "tr": ["artan biçimde", "giderek"], "example_en": "The symptoms became progressively worse over time.", "example_tr": "Belirtiler zamanla giderek kötüleşti.", "synonyms": ["increasingly", "more and more"] },
+    { "id": 104, "en": "susceptible", "pos": "adjective", "level": "B2", "tr": ["hassas", "savunmasız", "duyarlı"], "example_en": "Young children are more susceptible to infections.", "example_tr": "Küçük çocuklar enfeksiyonlara karşı daha savunmasızdır.", "synonyms": ["vulnerable"] },
+    { "id": 105, "en": "utilization", "pos": "noun", "level": "B2", "tr": ["kullanma", "faydalanma"], "example_en": "Efficient utilization of resources is key to sustainability.", "example_tr": "Kaynakların verimli kullanımı sürdürülebilirlik için önemlidir.", "synonyms": ["consumption", "exploitation"] },
+    { "id": 106, "en": "obsolete", "pos": "adjective", "level": "B1", "tr": ["demode", "eski", "modası geçmiş"], "example_en": "Many old technologies have become obsolete.", "example_tr": "Birçok eski teknoloji artık modası geçmiş durumda.", "synonyms": ["outdated", "old-fashioned"] },
+    { "id": 107, "en": "fundamentally", "pos": "adverb", "level": "B2", "tr": ["esasen", "temelde"], "example_en": "The two theories are fundamentally different.", "example_tr": "İki teori esasen birbirinden farklıdır.", "synonyms": ["basically", "essentially"] },
+    { "id": 108, "en": "precisely", "pos": "adverb", "level": "B1", "tr": ["tam olarak"], "example_en": "It is precisely for this reason that the plan failed.", "example_tr": "Plan tam olarak bu nedenle başarısız oldu.", "synonyms": ["exactly", "completely"] },
+    { "id": 109, "en": "recognize", "pos": "verb", "level": "A2", "tr": ["tanımak", "ayırt etmek"], "example_en": "It is important to recognize the signs of stress early.", "example_tr": "Stres belirtilerini erken tanımak önemlidir.", "synonyms": ["identify", "distinguish"] }
   ]
 }
