@@ -19,16 +19,26 @@
     </form>
   </div>
 
-  <header class="app-header">
-    <div class="brand">
-      <span class="brand-mark">YDS365</span>
-      <span class="brand-text">Kelime Çalışması</span>
+  <div class="app-topbar">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark">YDS365</span>
+        <span class="brand-text">Kelime Çalışması</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar"><span id="progressFill"></span></div>
+        <span id="progressText" class="progress-text">YDS'de çıkan sık kelimeler</span>
+      </div>
+    </header>
+
+    <div id="examBanner" class="exam-banner-wrap" hidden>
+      <div class="exam-banner">
+        <span id="examBannerNum" class="exam-banner-num"></span>
+        <span id="examBannerLabel" class="exam-banner-label"></span>
+        <span id="examBannerSub" class="exam-banner-sub"></span>
+      </div>
     </div>
-    <div class="progress">
-      <div class="progress-bar"><span id="progressFill"></span></div>
-      <span id="progressText" class="progress-text">YDS'de çıkan sık kelimeler</span>
-    </div>
-  </header>
+  </div>
 
   <nav class="tabs" role="tablist">
     <button class="tab is-active" data-view="card" role="tab" aria-label="Kart">

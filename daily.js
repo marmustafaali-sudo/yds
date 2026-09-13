@@ -108,6 +108,29 @@
     box.appendChild(sub);
     return box;
   }
+
+  // her ekranda header'ın altında sabit, sınava <=10 gün kalınca yanıp sönen banner
+  var BANNER_THRESHOLD = 10;
+  function renderExamBanner() {
+    var wrap = document.getElementById("examBanner");
+    if (!wrap) return;
+    var left = daysToExam(getExam());
+    if (left < 0 || left > BANNER_THRESHOLD) {
+      wrap.hidden = true;
+      return;
+    }
+    var numEl = document.getElementById("examBannerNum");
+    var labelEl = document.getElementById("examBannerLabel");
+    if (left === 0) {
+      numEl.textContent = "Bugün";
+      labelEl.textContent = "sınav günü — başarılar!";
+    } else {
+      numEl.textContent = String(left);
+      labelEl.textContent = "gün kaldı";
+    }
+    document.getElementById("examBannerSub").textContent = "YDS · " + fmtLongDate(getExam());
+    wrap.hidden = false;
+  }
   function getLog() {
     var l = load(LS_LOG, null);
     if (!l || l.date !== todayStr() || !Array.isArray(l.ids)) {
@@ -201,6 +224,7 @@
   /* ---------- render: ana kart ---------- */
 
   function render() {
+    renderExamBanner();
     if (!host) return;
     if (review) { renderReview(); return; }
 
