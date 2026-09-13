@@ -282,7 +282,7 @@
     // üst etiket
     ctx.font = "italic 500 30px " + serif;
     ctx.fillStyle = "rgba(255,255,255,0.72)";
-    ctx.fillText((examLabel || "YDS") + " · Soru " + q.id, MARGIN, y);
+    ctx.fillText((examLabel || "YDS") + " · Örnek Soru " + q.id, MARGIN, y);
     y += 56;
 
     var bottomLimit = hh - MARGIN - 10;
@@ -374,7 +374,7 @@
     if (!q) return "";
     var parts = displayParts(q);
     var lines = [];
-    lines.push("🧠 " + (examLabel || "YDS") + " · Soru " + q.id);
+    lines.push("🧠 " + (examLabel || "YDS") + " · Örnek Soru " + q.id);
     lines.push("");
     if (parts.passage) { lines.push(parts.passage); lines.push(""); }
     lines.push(parts.stem);
