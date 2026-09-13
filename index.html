@@ -157,6 +157,19 @@
     <div id="view-post" class="view">
       <p class="post-hint">İnstagram postu (1080×1350). Kelime seç, metni istersen düzenle, PNG indir.</p>
 
+      <div class="bg-picker">
+        <div class="post-queue-head"><strong>Arka plan</strong></div>
+        <p class="post-hint">Ana tema (İznik lale) varsayılan. Özel günler için arka plan ekleyip seçebilirsin — seçim Post, Soru ve Geri sayım postlarının hepsinde geçerli.</p>
+        <div class="bg-row">
+          <select id="bgSelect" class="post-select" data-bg-select></select>
+          <label class="btn-ghost bg-add-label">+ Ekle
+            <input type="file" accept="image/*" hidden data-bg-add />
+          </label>
+          <button type="button" class="btn-ghost" data-bg-remove>Kaldır</button>
+        </div>
+        <img class="bg-thumb" alt="" data-bg-thumb />
+      </div>
+
       <div class="post-preview">
         <canvas id="postCanvas" width="1080" height="1350"></canvas>
       </div>
@@ -246,6 +259,19 @@
     <div id="view-qpost" class="view">
       <p class="post-hint">Gerçek YDS sorusu postu (1080×1350). Soru seç → görsel sadece soruyu gösterir (cevap yok, takipçi tahmin etsin) → PNG indir. Cevap, aşağıdaki açıklama kutusunda.</p>
 
+      <div class="bg-picker">
+        <div class="post-queue-head"><strong>Arka plan</strong></div>
+        <p class="post-hint">Post sekmesiyle ortak — orada eklediğin/seçtiğin arka plan burada da geçerli.</p>
+        <div class="bg-row">
+          <select class="post-select" data-bg-select></select>
+          <label class="btn-ghost bg-add-label">+ Ekle
+            <input type="file" accept="image/*" hidden data-bg-add />
+          </label>
+          <button type="button" class="btn-ghost" data-bg-remove>Kaldır</button>
+        </div>
+        <img class="bg-thumb" alt="" data-bg-thumb />
+      </div>
+
       <div class="post-preview">
         <canvas id="qCanvas" width="1080" height="1350"></canvas>
       </div>
@@ -291,6 +317,7 @@
   <script src="mobile.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
+  <script src="bg.js"></script>
   <script src="post.js"></script>
   <script src="qpost.js"></script>
   <script src="daily.js"></script>

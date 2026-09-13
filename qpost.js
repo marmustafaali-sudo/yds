@@ -82,10 +82,18 @@
   }
 
   function loadAssets() {
-    bgImg = new Image();
-    bgImg.onload = function () { render(); };
-    bgImg.onerror = function () { render(); };
-    bgImg.src = "ydbackground.jpg";
+    if (window.YDSBackground) {
+      window.YDSBackground.getImage(function (img) { bgImg = img; render(); });
+    } else {
+      bgImg = new Image();
+      bgImg.onload = function () { render(); };
+      bgImg.onerror = function () { render(); };
+      bgImg.src = "ydbackground.jpg";
+    }
+    document.addEventListener("yds:bgchange", function (e) {
+      bgImg = e.detail.image;
+      render();
+    });
 
     var specs = [
       '700 44px "Playfair Display"',

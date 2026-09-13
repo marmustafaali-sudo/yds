@@ -9,6 +9,7 @@ const www = join(root, "www");
 const FILES = [
   "index.html",
   "app.js",
+  "bg.js",
   "post.js",
   "qpost.js",
   "auth.js",

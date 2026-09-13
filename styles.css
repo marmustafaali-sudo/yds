@@ -301,6 +301,16 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .quiz-points-big { font-size: 22px; font-weight: 800; margin: 6px 0 2px; }
 .quiz-streak-info { font-size: 13px; color: var(--ink-soft); margin-bottom: 14px; }
 
+/* Arka plan seçici */
+.bg-picker { margin-top: 12px; }
+.bg-row { display: flex; gap: 6px; align-items: center; }
+.bg-row .post-select { flex: 1; }
+.bg-add-label { white-space: nowrap; }
+.bg-thumb {
+  display: block; width: 100%; max-width: 200px; height: 70px; object-fit: cover;
+  border-radius: 8px; margin-top: 8px; border: 1px solid var(--line); background: #0b1020;
+}
+
 /* Post üretici */
 .post-hint { font-size: 13px; color: var(--ink-soft); margin: 10px 2px; }
 .post-preview {
