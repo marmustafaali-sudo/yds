@@ -424,7 +424,7 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 
 @media (min-width: 480px) {
   .face-word { font-size: 36px; }
-  #postCanvas, #cdCanvas { max-width: 400px; }
+  #postCanvas, #cdCanvas, #gPostCanvas { max-width: 400px; }
 }
 
 /* Native (Capacitor) uygulamada Post sekmesi + veri paneli gizli — içerik araçları. */
@@ -432,6 +432,8 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .is-native #view-post,
 .is-native .tab[data-view="qpost"],
 .is-native #view-qpost,
+.is-native .tab[data-view="gpost"],
+.is-native #view-gpost,
 .is-native .app-footer { display: none !important; }
 
 /* "Bugün" kartı — günlük hedef + akıllı tekrar + hatırlatma */

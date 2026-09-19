@@ -60,7 +60,8 @@
       card: document.getElementById("view-card"),
       quiz: document.getElementById("view-quiz"),
       post: document.getElementById("view-post"),
-      qpost: document.getElementById("view-qpost")
+      qpost: document.getElementById("view-qpost"),
+      gpost: document.getElementById("view-gpost")
     };
     el.search = document.getElementById("search");
     el.levelFilter = document.getElementById("levelFilter");
@@ -297,7 +298,7 @@
       el.views[k].classList.toggle("is-active", k === v);
     });
     var controls = document.querySelector(".controls");
-    if (controls) controls.hidden = (v === "post" || v === "qpost");
+    if (controls) controls.hidden = (v === "post" || v === "qpost" || v === "gpost");
     renderCurrentView();
   }
 
