@@ -1,12 +1,14 @@
 /* YDS365 Kelime Çalışması — seviye belirleme sınavı.
-   İlk açılışta (auth'tan sonra) bir kez gösterilir: A2/B1/B2/C1'den 5'er soru
-   (kelimenin TR anlamını seç), sonunda önerilen seviyeyi belirler ve
-   Liste/Test'teki seviye filtresini o seviyeye ayarlar. */
+   Ana ekrana zorla açılmaz: alt navigasyonun üstünde ince bir davet çubuğu
+   çıkar ("Seviyeni belirle"), dokununca tam ekran akış başlar — A2/B1/B2/C1'den
+   5'er soru (kelimenin TR anlamını seç, her seferinde havuzdan rastgele),
+   sonunda önerilen seviyeyi belirler ve Liste/Test'teki seviye filtresini ayarlar. */
 (function () {
   "use strict";
 
   var LS_LEVEL = "yds.placementLevel.v1";
   var LS_SKIPPED = "yds.placementSkipped.v1";
+  var LS_TUTORIAL_SEEN = "yds.tutorialSeen.v1"; // tutorial.js ile aynı anahtar
   var LEVELS = ["A2", "B1", "B2", "C1"];
   var PER_LEVEL = 5;
   var PASS_RATIO = 0.6;
@@ -23,10 +25,28 @@
     } else {
       document.addEventListener("yds:words", function () { words = window.YDSWords || []; }, { once: true });
     }
-    waitForAuth(maybeAutoShow);
+    waitForAuth(function () {
+      // Tutorial ilk kez gösterilecekse önce o bitsin (ana ekranın üstüne iki
+      // katman binmesin); daha önce görüldüyse olay hiç gelmeyebilir (sıralama
+      // yarışı) — bu yüzden senkron kontrol edip sadece gerçekten gerekince bekliyoruz.
+      var cardView = document.getElementById("view-card");
+      var tutorialWillRun = !seenTutorial() && cardView && cardView.classList.contains("is-active");
+      if (tutorialWillRun) {
+        document.addEventListener("yds:tutorialdone", maybeAutoShow, { once: true });
+      } else {
+        maybeAutoShow();
+      }
+    });
   });
 
+  function seenTutorial() {
+    try { return localStorage.getItem(LS_TUTORIAL_SEEN) === "1"; } catch (e) { return false; }
+  }
+
   function cache() {
+    els.prompt = document.getElementById("placementPrompt");
+    els.promptOpen = document.getElementById("placementPromptOpen");
+    els.promptClose = document.getElementById("placementPromptClose");
     els.gate = document.getElementById("placementGate");
     els.intro = document.getElementById("placementIntro");
     els.quiz = document.getElementById("placementQuiz");
@@ -48,13 +68,16 @@
   }
 
   function bind() {
+    if (els.promptOpen) els.promptOpen.addEventListener("click", function () { hidePrompt(); showIntro(); });
+    if (els.promptClose) els.promptClose.addEventListener("click", function () { save(LS_SKIPPED, true); hidePrompt(); });
     if (els.start) els.start.addEventListener("click", startQuiz);
     if (els.skip) els.skip.addEventListener("click", function () { save(LS_SKIPPED, true); hideGate(); });
-    if (els.exit) els.exit.addEventListener("click", function () { save(LS_SKIPPED, true); hideGate(); });
+    if (els.exit) els.exit.addEventListener("click", function () { hideGate(); showPrompt(); });
     if (els.next) els.next.addEventListener("click", nextQuestion);
     if (els.finish) els.finish.addEventListener("click", finishAndClose);
     if (els.retake) els.retake.addEventListener("click", function () {
       try { localStorage.removeItem(LS_LEVEL); localStorage.removeItem(LS_SKIPPED); } catch (e) {}
+      hidePrompt();
       showIntro();
     });
   }
@@ -71,11 +94,19 @@
     if (!words.length) {
       document.addEventListener("yds:words", function () {
         words = window.YDSWords || [];
-        if (words.length) showIntro();
+        if (words.length) showPrompt();
       }, { once: true });
       return;
     }
-    showIntro();
+    showPrompt();
+  }
+
+  function showPrompt() {
+    if (els.prompt) els.prompt.hidden = false;
+  }
+
+  function hidePrompt() {
+    if (els.prompt) els.prompt.hidden = true;
   }
 
   function showIntro() {
@@ -225,6 +256,7 @@
     var level = (quiz && quiz.recommended) || "A2";
     save(LS_LEVEL, level);
     hideGate();
+    hidePrompt();
     applyLevel(level);
   }
 

@@ -81,6 +81,11 @@
     </div>
   </div>
 
+  <div id="placementPrompt" class="placement-prompt" hidden>
+    <button type="button" id="placementPromptOpen" class="placement-prompt-open">Seviyeni belirle · ~8 dk</button>
+    <button type="button" id="placementPromptClose" class="placement-prompt-close" aria-label="Kapat">✕</button>
+  </div>
+
   <nav class="tabs" role="tablist">
     <button class="tab is-active" data-view="card" role="tab" aria-label="Kart">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path></svg>
@@ -458,6 +463,7 @@
         </label>
         <button id="dataReset" class="btn-ghost">Varsayılana dön</button>
         <button id="placementRetake" class="btn-ghost">Seviye belirleme sınavını tekrar yap</button>
+        <button id="tutorialRetake" class="btn-ghost">Kullanım turunu tekrar göster</button>
       </div>
       <p id="dataMsg" class="data-msg"></p>
     </details>
@@ -471,6 +477,7 @@
   <script src="qpost.js"></script>
   <script src="gpost.js"></script>
   <script src="daily.js"></script>
+  <script src="tutorial.js"></script>
   <script src="placement.js"></script>
 </body>
 </html>

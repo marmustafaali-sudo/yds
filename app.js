@@ -644,7 +644,7 @@
       return;
     }
     var n = Math.min(10, pool.length);
-    var questions = shuffled(pool).slice(0, n).map(function (w) {
+    var questions = pickQuizWords(pool, n).map(function (w) {
       return makeQuestion(w, pool);
     });
     state.quiz = {
@@ -655,6 +655,24 @@
     el.quizResult.hidden = true;
     el.quizRun.hidden = false;
     renderQuizQuestion();
+  }
+
+  // Sorular çoğunlukla henüz ezberlenmemiş kelimelerden gelsin (~%70), kalanı
+  // (~%30) tekrar/pekiştirme için öğrenilmiş kelimelerden — havuz yetersizse tamamlanır.
+  var QUIZ_LEARNED_RATIO = 0.3;
+  function pickQuizWords(pool, n) {
+    var unlearned = pool.filter(function (w) { return !state.learned[w.id]; });
+    var learnedArr = pool.filter(function (w) { return state.learned[w.id]; });
+    var wantLearned = Math.round(n * QUIZ_LEARNED_RATIO);
+    var wantUnlearned = n - wantLearned;
+    var picked = shuffled(unlearned).slice(0, wantUnlearned).concat(shuffled(learnedArr).slice(0, wantLearned));
+    if (picked.length < n) {
+      var used = {};
+      picked.forEach(function (w) { used[w.id] = true; });
+      var rest = shuffled(pool.filter(function (w) { return !used[w.id]; }));
+      picked = picked.concat(rest.slice(0, n - picked.length));
+    }
+    return shuffled(picked).slice(0, n);
   }
 
   function optionsFrom(correctText, pool, correctId, pick) {

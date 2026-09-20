@@ -8,11 +8,18 @@
   var LS_SRS   = "yds.srs.v1";        // { wordId: { box, due } }
   var LS_DONE  = "yds.doneDays.v1";   // ["YYYY-MM-DD", ...]  (ileride streak takvimi için)
   var LS_NOTIF = "yds.notif.v1";      // { enabled, time }
-  var LS_EXAM  = "yds.examDate.v1";   // "YYYY-MM-DD"
+  var LS_EXAM_TYPE = "yds.examType.v1"; // "YDS" | "YOKDIL"
 
   var DEFAULT_GOAL = 15;
-  var DEFAULT_EXAM = "2026-11-22";    // YDS 2026 Sonbahar (ÖSYM) — kullanıcı değiştirebilir
   var BOX_DAYS = [0, 1, 3, 7, 16, 35]; // index = kutu (1..5); son kutuda "mezun" olur
+  // ÖSYM'nin resmi 2026 sınav takviminden alınmıştır (osym.gov.tr, 2026-09-20).
+  // Tarihler her yıl ÖSYM yeni takvimi açıkladığında elle güncellenmeli — sınav
+  // takvimini gerçek zamanlı olarak osym.gov.tr'den çekmek istemci tarafında
+  // mümkün değil (site tarayıcıdan çapraz-kaynak isteklere izin vermiyor).
+  var EXAM_CALENDAR = {
+    YDS: ["2026-04-05", "2026-11-22"],
+    YOKDIL: ["2026-03-08", "2026-08-02"]
+  };
   var NOTIF_ID = 1001;
 
   var host = null;
@@ -62,9 +69,18 @@
 
   /* ---------- sınav geri sayımı ---------- */
 
+  function getExamType() {
+    var t = load(LS_EXAM_TYPE, "YDS");
+    return EXAM_CALENDAR[t] ? t : "YDS";
+  }
+  function examTypeLabel(t) { return t === "YOKDIL" ? "YÖKDİL" : "YDS"; }
   function getExam() {
-    var v = load(LS_EXAM, DEFAULT_EXAM);
-    return (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) ? v : DEFAULT_EXAM;
+    var dates = EXAM_CALENDAR[getExamType()];
+    var today = todayStr();
+    for (var i = 0; i < dates.length; i++) {
+      if (dates[i] >= today) return dates[i];
+    }
+    return dates[dates.length - 1]; // yılın tüm oturumları geçtiyse sonuncusu "geçti" olarak gösterilir
   }
   function daysToExam(isoStr) {
     var now = new Date(); now.setHours(0, 0, 0, 0);
@@ -78,6 +94,7 @@
     } catch (e) { return isoStr; }
   }
   function examBox() {
+    var type = getExamType();
     var exam = getExam();
     var left = daysToExam(exam);
     var box = div("daily-exam");
@@ -91,21 +108,22 @@
       main.appendChild(span("daily-exam-word", "sınav günü — başarılar!"));
     } else {
       main.appendChild(span("daily-exam-num", "—"));
-      main.appendChild(span("daily-exam-word", "sınav tarihi geçti, güncelle"));
+      main.appendChild(span("daily-exam-word", type + "'in bu yılki oturumları geçti"));
     }
     box.appendChild(main);
 
     var sub = div("daily-exam-sub");
-    sub.appendChild(span("", "YDS · " + fmtLongDate(exam)));
-    var d = document.createElement("input");
-    d.type = "date";
-    d.className = "daily-exam-date";
-    d.value = exam;
-    d.addEventListener("change", function () {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(d.value)) { save(LS_EXAM, d.value); render(); }
-    });
-    sub.appendChild(d);
+    sub.appendChild(span("", examTypeLabel(type) + " · " + fmtLongDate(exam)));
     box.appendChild(sub);
+
+    var typeRow = div("daily-exam-types");
+    ["YDS", "YOKDIL"].forEach(function (t) {
+      var b = btn("daily-exam-type" + (t === type ? " is-active" : ""), examTypeLabel(t));
+      b.addEventListener("click", function () { save(LS_EXAM_TYPE, t); render(); });
+      typeRow.appendChild(b);
+    });
+    box.appendChild(typeRow);
+
     return box;
   }
 
@@ -114,7 +132,8 @@
   function renderExamBanner() {
     var wrap = document.getElementById("examBanner");
     if (!wrap) return;
-    var left = daysToExam(getExam());
+    var exam = getExam();
+    var left = daysToExam(exam);
     if (left < 0 || left > BANNER_THRESHOLD) {
       wrap.hidden = true;
       return;
@@ -128,7 +147,7 @@
       numEl.textContent = String(left);
       labelEl.textContent = "gün kaldı";
     }
-    document.getElementById("examBannerSub").textContent = "YDS · " + fmtLongDate(getExam());
+    document.getElementById("examBannerSub").textContent = examTypeLabel(getExamType()) + " · " + fmtLongDate(exam);
     wrap.hidden = false;
   }
   function getLog() {
