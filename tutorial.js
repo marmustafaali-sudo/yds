@@ -1,7 +1,7 @@
 /* YDS365 Kelime Çalışması — ilk açılışta küçük kullanım turu.
    Gerçek arayüz elemanlarını "hayali dokunma" animasyonuyla işaret eder.
-   Bir kez gösterilir (localStorage), her koşulda "yds:tutorialdone" olayını yayınlar
-   ki placement.js seviye belirleme davetini ondan sonra göstersin. */
+   Sadece bir kez gösterilir (localStorage); atlanırsa ya da bitirilirse bir daha
+   çıkmaz — tekrar gösterme seçeneği yok. */
 (function () {
   "use strict";
 
@@ -25,13 +25,6 @@
   var stepIndex = 0;
 
   document.addEventListener("DOMContentLoaded", function () {
-    var retake = document.getElementById("tutorialRetake");
-    if (retake) retake.addEventListener("click", function () {
-      if (overlay) return;
-      var kartTab = document.querySelector('.tab[data-view="card"]');
-      if (kartTab) kartTab.click();
-      setTimeout(function () { build(); start(); }, 250);
-    });
     waitForAuth(function () {
       var seen = false;
       try { seen = localStorage.getItem(LS_SEEN) === "1"; } catch (e) {}

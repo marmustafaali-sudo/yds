@@ -1,10 +1,9 @@
 /* YDS365 Kelime Çalışması — haftalık seviye belirleme sınavı.
-   Ana ekrana zorla açılmaz: alt navigasyonun üstünde ince bir davet çubuğu
-   çıkar ("Seviyeni belirle"), dokununca tam ekran akış başlar — A2/B1/B2/C1'den
-   5'er soru (kelimenin TR anlamını seç, her seferinde havuzdan rastgele),
-   sonunda önerilen seviyeyi belirler ve Liste/Test'teki seviye filtresini ayarlar.
-   Tamamlandıktan sonra 7 gün kilitli kalır; kalan gün header'da küçük bir
-   satırda gösterilir, davet çubuğu kilit süresince gizli kalır. */
+   "Seviye" adında ayrı bir sekmede yaşar (Kart/Test/Liste ile aynı seviyede):
+   A2/B1/B2/C1'den 5'er soru (kelimenin TR anlamını seç, her seferinde havuzdan
+   rastgele), sonunda önerilen seviyeyi belirler ve Liste/Test'teki seviye
+   filtresini ayarlar. Tamamlandıktan sonra 7 gün kilitli kalır; sekmede kalan
+   gün + geçmiş sınavların grafiksel karşılaştırması gösterilir. */
 (function () {
   "use strict";
 
@@ -15,12 +14,12 @@
 
   var LS_LEVEL = "yds.placementLevel.v1";
   var LS_LAST_DATE = "yds.placementLastDate.v1"; // "YYYY-MM-DD" — en son tamamlanma günü
-  var SS_DISMISSED = "yds.placementPromptDismissed.v1"; // oturumluk: sadece davet çubuğu ✕'lendi
-  var LS_TUTORIAL_SEEN = "yds.tutorialSeen.v1"; // tutorial.js ile aynı anahtar
+  var LS_HISTORY = "yds.placementHistory.v1"; // [{date, level, correct, total}]
   var LEVELS = ["A2", "B1", "B2", "C1"];
   var PER_LEVEL = 5;
   var PASS_RATIO = 0.6;
   var LOCK_DAYS = 7;
+  var HISTORY_MAX = 20;
 
   var els = {};
   var words = [];
@@ -34,34 +33,14 @@
     } else {
       document.addEventListener("yds:words", function () { words = window.YDSWords || []; }, { once: true });
     }
-    waitForAuth(function () {
-      // Tutorial ilk kez gösterilecekse önce o bitsin (ana ekranın üstüne iki
-      // katman binmesin); daha önce görüldüyse olay hiç gelmeyebilir (sıralama
-      // yarışı) — bu yüzden senkron kontrol edip sadece gerçekten gerekince bekliyoruz.
-      var cardView = document.getElementById("view-card");
-      var tutorialWillRun = !seenTutorial() && cardView && cardView.classList.contains("is-active");
-      if (tutorialWillRun) {
-        document.addEventListener("yds:tutorialdone", maybeAutoShow, { once: true });
-      } else {
-        maybeAutoShow();
-      }
-    });
+    renderLevelStatus();
+    renderLevelHistory();
   });
 
-  function seenTutorial() {
-    try { return localStorage.getItem(LS_TUTORIAL_SEEN) === "1"; } catch (e) { return false; }
-  }
-
   function cache() {
-    els.prompt = document.getElementById("placementPrompt");
-    els.promptOpen = document.getElementById("placementPromptOpen");
-    els.promptClose = document.getElementById("placementPromptClose");
     els.gate = document.getElementById("placementGate");
-    els.intro = document.getElementById("placementIntro");
     els.quiz = document.getElementById("placementQuiz");
     els.result = document.getElementById("placementResult");
-    els.start = document.getElementById("placementStart");
-    els.skip = document.getElementById("placementSkip");
     els.exit = document.getElementById("placementExit");
     els.progress = document.getElementById("placementProgress");
     els.levelChip = document.getElementById("placementLevelChip");
@@ -73,50 +52,15 @@
     els.resultSub = document.getElementById("placementResultSub");
     els.breakdown = document.getElementById("placementBreakdown");
     els.finish = document.getElementById("placementFinish");
-    els.retake = document.getElementById("placementRetake");
+    els.levelStatus = document.getElementById("levelStatus");
+    els.levelHistory = document.getElementById("levelHistory");
+    els.levelChart = document.getElementById("levelChart");
   }
 
   function bind() {
-    if (els.promptOpen) els.promptOpen.addEventListener("click", function () { hidePrompt(); showIntro(); });
-    if (els.promptClose) els.promptClose.addEventListener("click", function () {
-      try { sessionStorage.setItem(SS_DISMISSED, "1"); } catch (e) {}
-      hidePrompt();
-    });
-    if (els.start) els.start.addEventListener("click", startQuiz);
-    if (els.skip) els.skip.addEventListener("click", function () { hideGate(); showPrompt(); });
-    if (els.exit) els.exit.addEventListener("click", function () { hideGate(); showPrompt(); });
+    if (els.exit) els.exit.addEventListener("click", hideGate);
     if (els.next) els.next.addEventListener("click", nextQuestion);
     if (els.finish) els.finish.addEventListener("click", finishAndClose);
-    if (els.retake) els.retake.addEventListener("click", function () {
-      try {
-        localStorage.removeItem(LS_LAST_DATE);
-        sessionStorage.removeItem(SS_DISMISSED);
-      } catch (e) {}
-      updateLockInfo();
-      showPrompt();
-    });
-  }
-
-  function waitForAuth(cb) {
-    if (!document.getElementById("authGate")) { cb(); return; }
-    document.addEventListener("yds:authok", cb, { once: true });
-  }
-
-  function maybeAutoShow() {
-    updateLockInfo();
-    if (isLocked()) return; // header'daki küçük satır zaten gösteriyor
-    var dismissedNow = false;
-    try { dismissedNow = sessionStorage.getItem(SS_DISMISSED) === "1"; } catch (e) {}
-    if (dismissedNow) return;
-    // words henüz gelmediyse biraz bekle
-    if (!words.length) {
-      document.addEventListener("yds:words", function () {
-        words = window.YDSWords || [];
-        if (words.length) showPrompt();
-      }, { once: true });
-      return;
-    }
-    showPrompt();
   }
 
   /* ---------- haftalık kilit ---------- */
@@ -139,30 +83,79 @@
     return daysSinceLast() < LOCK_DAYS;
   }
 
-  function updateLockInfo() {
-    var el = document.getElementById("placementLockInfo");
-    if (!el) return;
+  /* ---------- "Seviye" sekmesi: durum kartı + geçmiş grafiği ---------- */
+
+  function renderLevelStatus() {
+    if (!els.levelStatus) return;
     var since = daysSinceLast();
-    if (since >= LOCK_DAYS) { el.hidden = true; return; }
-    var remaining = LOCK_DAYS - since;
-    el.textContent = "Sonraki seviye testine " + remaining + " gün kaldı";
-    el.hidden = false;
+    var lastLevel = load(LS_LEVEL, null);
+    var html;
+    if (since >= LOCK_DAYS) {
+      html =
+        '<div class="level-card level-card-ready">' +
+        '<h2>Seviye Belirleme Sınavı</h2>' +
+        '<p>A2, B1, B2, C1\'den 5\'er soru (20 soru, ~8 dk). Sonunda önerilen seviyeni görürsün ve kartlar/testler ona göre ayarlanır.</p>' +
+        '<div class="placement-levels">' +
+        LEVELS.map(function (lv) {
+          return '<div class="placement-level-row"><span class="placement-level-chip lvl-' + lv + '">' + lv + '</span><span>5 soru</span></div>';
+        }).join("") +
+        '</div>' +
+        '<button type="button" id="levelStart" class="btn btn-good btn-wide">Teste başla</button>' +
+        '</div>';
+    } else {
+      var remaining = LOCK_DAYS - since;
+      html =
+        '<div class="level-card level-card-locked">' +
+        (lastLevel ? '<span class="placement-level-chip lvl-' + lastLevel + '">' + lastLevel + '</span>' : '') +
+        '<p>Şu anki seviyen ' + (lastLevel || "—") + '. Sonraki teste <strong>' + remaining + ' gün</strong> kaldı.</p>' +
+        '</div>';
+    }
+    els.levelStatus.innerHTML = html;
+    var startBtn = document.getElementById("levelStart");
+    if (startBtn) startBtn.addEventListener("click", startQuiz);
   }
 
-  function showPrompt() {
-    if (els.prompt) els.prompt.hidden = false;
+  function loadHistory() {
+    return load(LS_HISTORY, []);
   }
 
-  function hidePrompt() {
-    if (els.prompt) els.prompt.hidden = true;
+  function pushHistory(entry) {
+    var hist = loadHistory();
+    hist.push(entry);
+    if (hist.length > HISTORY_MAX) hist = hist.slice(hist.length - HISTORY_MAX);
+    save(LS_HISTORY, hist);
   }
 
-  function showIntro() {
-    if (!els.gate) return;
-    els.intro.hidden = false;
-    els.quiz.hidden = true;
-    els.result.hidden = true;
-    els.gate.hidden = false;
+  function renderLevelHistory() {
+    if (!els.levelHistory || !els.levelChart) return;
+    var hist = loadHistory();
+    if (!hist.length) {
+      els.levelHistory.hidden = true;
+      return;
+    }
+    els.levelHistory.hidden = false;
+    els.levelChart.innerHTML = "";
+    hist.forEach(function (h) {
+      var pct = h.total ? Math.round((h.correct / h.total) * 100) : 0;
+      var col = document.createElement("div");
+      col.className = "level-chart-col";
+      col.innerHTML =
+        '<span class="placement-level-chip lvl-' + h.level + '" style="width:22px;height:22px;font-size:10px;">' + h.level + '</span>' +
+        '<div class="level-chart-track"><div class="level-chart-fill lvl-' + h.level + '" style="height:' + pct + '%"></div></div>' +
+        '<span class="level-chart-pct">%' + pct + '</span>' +
+        '<span class="level-chart-date">' + shortDate(h.date) + '</span>';
+      els.levelChart.appendChild(col);
+    });
+    els.levelChart.scrollLeft = els.levelChart.scrollWidth;
+  }
+
+  function shortDate(iso) {
+    var p = iso.split("-");
+    return p.length === 3 ? (p[2] + "." + p[1]) : iso;
+  }
+
+  function showGate() {
+    if (els.gate) els.gate.hidden = false;
   }
 
   function hideGate() {
@@ -218,13 +211,13 @@
 
   function startQuiz() {
     var qs = buildQuestions();
-    if (!qs.length) { hideGate(); return; }
+    if (!qs.length) return;
     var scores = {};
     LEVELS.forEach(function (lv) { scores[lv] = { correct: 0, total: 0 }; });
     quiz = { qs: qs, index: 0, picks: {}, scores: scores };
-    els.intro.hidden = true;
     els.result.hidden = true;
     els.quiz.hidden = false;
+    showGate();
     renderQuestion();
   }
 
@@ -298,16 +291,19 @@
     });
 
     quiz.recommended = recommended;
+    quiz.totalCorrect = totalCorrect;
+    quiz.totalQs = totalQs;
   }
 
   function finishAndClose() {
     var level = (quiz && quiz.recommended) || "A2";
     save(LS_LEVEL, level);
     save(LS_LAST_DATE, todayISO());
+    pushHistory({ date: todayISO(), level: level, correct: (quiz && quiz.totalCorrect) || 0, total: (quiz && quiz.totalQs) || 0 });
     hideGate();
-    hidePrompt();
-    updateLockInfo();
     applyLevel(level);
+    renderLevelStatus();
+    renderLevelHistory();
   }
 
   function applyLevel(level) {

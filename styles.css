@@ -70,7 +70,6 @@
 .lvl-B1, #placementLevelChip.lvl-B1 { background: var(--b1); }
 .lvl-B2, #placementLevelChip.lvl-B2 { background: var(--b2); }
 .lvl-C1, #placementLevelChip.lvl-C1 { background: var(--c1); }
-.placement-skip { border: 0; background: none; color: var(--ink-soft); font-size: 13px; padding: 4px; cursor: pointer; }
 
 .placement-quiz-top { display: flex; align-items: center; gap: 10px; }
 .placement-x {
@@ -225,20 +224,35 @@ body {
   padding: 9px 18px; border-radius: 999px; cursor: pointer;
 }
 
-/* Seviye belirleme — alt nav'ın hemen üstünde ince davet çubuğu */
-.placement-prompt {
-  position: fixed; left: 0; right: 0; bottom: calc(66px + env(safe-area-inset-bottom)); z-index: 15;
-  max-width: var(--maxw); margin: 0 auto; display: flex; align-items: center; gap: 8px;
-  background: var(--accent); color: #fff; padding: 10px 14px; box-shadow: 0 -2px 10px rgba(15,23,42,.12);
+/* "Seviye" sekmesi — durum kartı + geçmiş sınavlar grafiği */
+.level-status { padding: 4px 2px 0; }
+.level-card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  text-align: center;
 }
-.placement-prompt-open {
-  flex: 1; border: 0; background: none; color: #fff; font-size: 13.5px; font-weight: 700;
-  text-align: left; cursor: pointer; padding: 2px;
+.level-card h2 {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif; font-size: 21px; font-weight: 700; color: var(--ink);
 }
-.placement-prompt-close {
-  flex: none; width: 26px; height: 26px; border-radius: 999px; border: 0;
-  background: rgba(255,255,255,.2); color: #fff; font-size: 12px; cursor: pointer;
+.level-card p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
+.level-card .placement-levels { width: 100%; }
+.level-card-locked .placement-level-chip { width: 44px; height: 44px; font-size: 14px; }
+.level-history { margin-top: 18px; }
+.level-history-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+.level-chart {
+  display: flex; align-items: flex-end; gap: 10px; overflow-x: auto; padding: 4px 2px 6px;
+  min-height: 130px;
 }
+.level-chart-col {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; flex: none; width: 40px;
+}
+.level-chart-track {
+  width: 22px; height: 84px; background: var(--line); border-radius: 999px; overflow: hidden;
+  display: flex; align-items: flex-end;
+}
+.level-chart-fill { width: 100%; border-radius: 999px; min-height: 4px; }
+.level-chart-pct { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); }
+.level-chart-date { font-size: 10px; color: var(--ink-soft); }
 
 /* Controls */
 .controls { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 4px; }
@@ -553,19 +567,15 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   #postCanvas, #cdCanvas, #gPostCanvas { max-width: 400px; }
 }
 
-/* Native (Capacitor) uygulamada Post sekmesi + ham veri araçları gizli — içerik/yedek araçları,
-   sitede (web) kalsın. Seviye belirleme sınavını tekrar yap / turu tekrar göster butonları
-   ayakta kalır (native'in tek "ayarlar" erişimi onlar). */
+/* Native (Capacitor) uygulamada Post sekmesi + veri paneli (ham dışa/içe aktarma —
+   web'in araçları) gizli. */
 .is-native .tab[data-view="post"],
 .is-native #view-post,
 .is-native .tab[data-view="qpost"],
 .is-native #view-qpost,
 .is-native .tab[data-view="gpost"],
 .is-native #view-gpost,
-.is-native #dataExportWords,
-.is-native #dataExportAll,
-.is-native .data-import-label,
-.is-native #dataReset { display: none !important; }
+.is-native .app-footer { display: none !important; }
 
 /* Arama / seviye filtresi / sadece-öğrenilmemiş — web'in klasik liste araçları, native'de
    (telefon appi) sadeleştirilmiş kart deneyimi lehine gizli. */
@@ -575,10 +585,9 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 #progressPct { display: none; }
 .is-native #progressPct { display: inline; }
 
-/* Seviye sınavı / kullanım turu tekrar butonları — sadece native'de bağlı (placement.js,
-   tutorial.js web'de hiç çalışmıyor), o yüzden web'de gösterilmesin. */
-#placementRetake, #tutorialRetake { display: none; }
-.is-native #placementRetake, .is-native #tutorialRetake { display: inline-block; }
+/* "Seviye" sekmesi — seviye belirleme sınavı + geçmiş, sadece telefon appinde. */
+.tab[data-view="level"] { display: none; }
+.is-native .tab[data-view="level"] { display: flex; }
 
 /* "Bugün" kartı — günlük hedef + akıllı tekrar + hatırlatma */
 .daily-card {

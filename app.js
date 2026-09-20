@@ -59,6 +59,7 @@
       list: document.getElementById("view-list"),
       card: document.getElementById("view-card"),
       quiz: document.getElementById("view-quiz"),
+      level: document.getElementById("view-level"),
       post: document.getElementById("view-post"),
       qpost: document.getElementById("view-qpost"),
       gpost: document.getElementById("view-gpost")
