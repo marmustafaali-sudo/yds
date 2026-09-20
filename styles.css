@@ -195,35 +195,6 @@ body {
 .tab svg { width: 22px; height: 22px; display: block; }
 .tab.is-active { color: var(--accent); }
 
-/* Kullanım turu — ilk açılışta gerçek elemanları işaret eden mini tur */
-.tutorial-overlay { position: fixed; inset: 0; z-index: 9990; }
-.tutorial-spot {
-  position: fixed; border-radius: 14px; box-shadow: 0 0 0 9999px rgba(15,23,42,.72);
-  transition: left .3s ease, top .3s ease, width .3s ease, height .3s ease; pointer-events: none;
-}
-.tutorial-tap {
-  position: fixed; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 999px;
-  background: rgba(255,255,255,.9); pointer-events: none; animation: tutorialPing 1.4s ease-out infinite;
-  transition: left .3s ease, top .3s ease;
-}
-@keyframes tutorialPing {
-  0% { transform: scale(.4); opacity: .9; }
-  70% { transform: scale(1.7); opacity: 0; }
-  100% { transform: scale(1.7); opacity: 0; }
-}
-.tutorial-caption {
-  position: fixed; left: 20px; right: 20px; max-width: 360px; margin: 0 auto;
-  background: #fff; border-radius: 14px; padding: 16px 18px; box-shadow: 0 10px 30px rgba(15,23,42,.3);
-  transition: top .3s ease;
-}
-.tutorial-caption p { font-size: 14px; color: var(--ink); line-height: 1.5; margin-bottom: 12px; }
-.tutorial-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.tutorial-skip { border: 0; background: none; color: var(--ink-soft); font-size: 13px; cursor: pointer; padding: 6px; }
-.tutorial-next {
-  border: 0; background: var(--accent); color: #fff; font-weight: 700; font-size: 13.5px;
-  padding: 9px 18px; border-radius: 999px; cursor: pointer;
-}
-
 /* "Seviye" sekmesi — durum kartı + geçmiş sınavlar grafiği */
 .level-status { padding: 4px 2px 0; }
 .level-card {
