@@ -38,6 +38,74 @@
 .auth-box input:focus { border-color: var(--accent); outline: none; }
 .auth-err { font-size: 13px; color: var(--bad); min-height: 18px; }
 
+/* Seviye belirleme sınavı */
+.placement-gate {
+  position: fixed; inset: 0; z-index: 9998; background: rgba(15,23,42,.5);
+  display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
+}
+.placement-box {
+  background: #fff; border-radius: 18px; padding: 26px 22px; width: 100%; max-width: 380px;
+  display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(15,23,42,.3);
+}
+.placement-tag {
+  align-self: center; background: #eff6ff; color: var(--accent); font-weight: 800; font-size: 11px;
+  letter-spacing: .4px; padding: 5px 12px; border-radius: 999px;
+}
+.placement-title {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 700;
+  text-align: center; color: var(--ink);
+}
+.placement-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; text-align: center; }
+.placement-levels { display: flex; flex-direction: column; gap: 8px; }
+.placement-level-row {
+  display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px; font-size: 13.5px; color: var(--ink);
+}
+.placement-level-chip {
+  width: 32px; height: 32px; border-radius: 999px; color: #fff; font-weight: 800; font-size: 11.5px;
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.lvl-A2, #placementLevelChip.lvl-A2 { background: var(--a2); }
+.lvl-B1, #placementLevelChip.lvl-B1 { background: var(--b1); }
+.lvl-B2, #placementLevelChip.lvl-B2 { background: var(--b2); }
+.lvl-C1, #placementLevelChip.lvl-C1 { background: var(--c1); }
+.placement-skip { border: 0; background: none; color: var(--ink-soft); font-size: 13px; padding: 4px; cursor: pointer; }
+
+.placement-quiz-top { display: flex; align-items: center; gap: 10px; }
+.placement-x {
+  width: 28px; height: 28px; border-radius: 999px; border: 0; background: var(--line); color: var(--ink-soft);
+  font-size: 13px; cursor: pointer; flex: none;
+}
+.placement-progress { flex: 1; font-size: 12.5px; font-weight: 700; color: var(--ink-soft); }
+#placementLevelChip { width: auto; height: auto; padding: 3px 10px; border-radius: 999px; font-size: 11px; }
+.placement-bar { height: 5px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.placement-bar span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+.placement-q-label { font-size: 11.5px; font-weight: 700; color: var(--neutral); letter-spacing: .3px; }
+.placement-word {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif; font-size: 28px; font-weight: 700;
+  color: var(--ink);
+}
+.placement-options { display: flex; flex-direction: column; gap: 8px; }
+.placement-opt {
+  text-align: left; padding: 13px 15px; border-radius: 12px; font-size: 14.5px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--line); background: #fff; color: var(--ink);
+}
+.placement-opt.is-picked { border: 2px solid var(--accent); background: #eff6ff; color: #1d4ed8; }
+#placementNext:disabled { opacity: .5; cursor: default; }
+
+.placement-result-level {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif; font-size: 52px; font-weight: 700;
+  text-align: center; color: var(--ink);
+}
+.placement-result-sub { font-size: 13.5px; color: var(--ink-soft); text-align: center; margin-top: -8px; }
+.placement-breakdown { display: flex; flex-direction: column; gap: 8px; }
+.placement-bd-row { display: flex; align-items: center; gap: 10px; }
+.placement-bd-label { width: 26px; font-size: 12px; font-weight: 800; flex: none; }
+.placement-bd-track { flex: 1; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.placement-bd-fill { display: block; height: 100%; }
+.placement-bd-score { width: 32px; font-size: 12px; color: var(--ink-soft); text-align: right; flex: none; }
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #f1f5f9;
@@ -73,11 +141,13 @@ body {
 }
 .brand-text { font-weight: 600; font-size: 15px; }
 .progress { max-width: var(--maxw); margin: 10px auto 0; }
+.progress-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
 .progress-bar {
   height: 6px; background: rgba(255,255,255,0.15); border-radius: 999px; overflow: hidden;
 }
 .progress-bar span { display: block; height: 100%; width: 0; background: var(--good); transition: width .3s; }
-.progress-text { font-size: 12px; color: #cbd5e1; display: block; margin-top: 5px; }
+.progress-text { font-size: 12px; color: #cbd5e1; }
+.progress-pct { font-size: 12.5px; font-weight: 800; color: #fff; flex: none; }
 
 /* Sınav uyarı banner'ı — sınava <=10 gün kalınca her ekranda header altında sabit */
 .exam-banner-wrap { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 14px; background: var(--bg); }
@@ -169,7 +239,13 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .word-item.is-learned { border-color: var(--good); background: #f0fdf4; }
 
 /* Flashcard */
-.card-stage { perspective: 1200px; margin: 18px 0; }
+.card-stage { margin: 18px 0; }
+.card-stage-row { display: flex; align-items: center; gap: 2px; }
+.flashcard-wrap { flex: 1; min-width: 0; perspective: 1200px; }
+.card-arrow {
+  flex: none; width: 34px; height: 52px; border: 0; background: none; color: var(--ink-soft);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
 .flashcard {
   position: relative; width: 100%; min-height: 360px; transform-style: preserve-3d;
   transition: transform .45s; cursor: pointer;
@@ -241,12 +317,11 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .btn-hard { background: var(--b2); }
 .btn-neutral { background: var(--neutral); }
 .btn-wide { width: 100%; flex: none; }
-.card-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
 .btn-ghost {
   background: none; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
   font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor: pointer;
 }
-.card-pos { font-size: 13px; color: var(--ink-soft); }
+.card-pos { display: block; text-align: center; font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
 .btn-shuffle { display: block; margin: 12px auto 0; }
 .empty { text-align: center; color: var(--ink-soft); padding: 40px 0; }
 

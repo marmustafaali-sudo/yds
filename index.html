@@ -19,6 +19,44 @@
     </form>
   </div>
 
+  <div id="placementGate" class="placement-gate" hidden>
+    <div id="placementIntro" class="placement-box">
+      <span class="placement-tag">SEVİYE BELİRLEME</span>
+      <h1 class="placement-title">Seviyeni birlikte bulalım</h1>
+      <p class="placement-desc">20 kısa sorudan oluşan bu test, hangi seviyeden (A2–C1) başlaman gerektiğini belirler.</p>
+      <div class="placement-levels">
+        <div class="placement-level-row"><span class="placement-level-chip lvl-A2">A2</span><span>5 soru</span></div>
+        <div class="placement-level-row"><span class="placement-level-chip lvl-B1">B1</span><span>5 soru</span></div>
+        <div class="placement-level-row"><span class="placement-level-chip lvl-B2">B2</span><span>5 soru</span></div>
+        <div class="placement-level-row"><span class="placement-level-chip lvl-C1">C1</span><span>5 soru</span></div>
+      </div>
+      <button id="placementStart" type="button" class="btn btn-good btn-wide">Teste başla · ~8 dk</button>
+      <button id="placementSkip" type="button" class="placement-skip">Şimdi değil, doğrudan başla</button>
+    </div>
+
+    <div id="placementQuiz" class="placement-box" hidden>
+      <div class="placement-quiz-top">
+        <button id="placementExit" type="button" class="placement-x" aria-label="Testten çık">✕</button>
+        <span id="placementProgress" class="placement-progress">Soru 1 / 20</span>
+        <span id="placementLevelChip" class="placement-level-chip">A2</span>
+      </div>
+      <div class="placement-bar"><span id="placementBarFill"></span></div>
+      <div class="placement-q-label">KELİMENİN TÜRKÇE ANLAMI HANGİSİ?</div>
+      <div id="placementWord" class="placement-word"></div>
+      <div id="placementOptions" class="placement-options"></div>
+      <button id="placementNext" type="button" class="btn btn-neutral btn-wide" disabled>İleri</button>
+    </div>
+
+    <div id="placementResult" class="placement-box" hidden>
+      <span class="placement-tag">SEVİYEN BELİRLENDİ</span>
+      <div id="placementResultLevel" class="placement-result-level">B1</div>
+      <div id="placementResultSub" class="placement-result-sub"></div>
+      <div id="placementBreakdown" class="placement-breakdown"></div>
+      <p class="placement-desc">Kartlar ve testler bu seviyeden başlayacak. İstediğin zaman Liste'den seviye filtresini değiştirebilirsin.</p>
+      <button id="placementFinish" type="button" class="btn btn-good btn-wide">Çalışmaya başla</button>
+    </div>
+  </div>
+
   <div class="app-topbar">
     <header class="app-header">
       <div class="brand">
@@ -26,8 +64,11 @@
         <span class="brand-text">Kelime Çalışması</span>
       </div>
       <div class="progress">
+        <div class="progress-row">
+          <span id="progressText" class="progress-text">YDS'de çıkan sık kelimeler</span>
+          <span id="progressPct" class="progress-pct">%0</span>
+        </div>
         <div class="progress-bar"><span id="progressFill"></span></div>
-        <span id="progressText" class="progress-text">YDS'de çıkan sık kelimeler</span>
       </div>
     </header>
 
@@ -93,34 +134,40 @@
       <div id="dailyCard" class="daily-card"></div>
       <div id="cardEmpty" class="empty" hidden>Bu filtrede kelime yok.</div>
       <div id="cardStage" class="card-stage">
-        <div id="flashcard" class="flashcard">
-          <div class="flashcard-face flashcard-front">
-            <span class="face-level" id="cardLevelFront"></span>
-            <span class="face-word" id="cardWordFront"></span>
-            <span class="face-pos" id="cardPosFront"></span>
-            <span class="face-cue" id="cardCue" hidden></span>
-            <button type="button" class="card-hint-btn" id="cardHintBtn">İpucu ver</button>
-            <span class="face-hint">Anlamı görmek için dokun</span>
+        <div class="card-stage-row">
+          <button type="button" id="cardPrev" class="card-arrow" aria-label="Önceki kelime">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+          </button>
+          <div class="flashcard-wrap">
+            <div id="flashcard" class="flashcard">
+              <div class="flashcard-face flashcard-front">
+                <span class="face-level" id="cardLevelFront"></span>
+                <span class="face-word" id="cardWordFront"></span>
+                <span class="face-pos" id="cardPosFront"></span>
+                <span class="face-cue" id="cardCue" hidden></span>
+                <button type="button" class="card-hint-btn" id="cardHintBtn">İpucu ver</button>
+                <span class="face-hint">Anlamı görmek için dokun</span>
+              </div>
+              <div class="flashcard-face flashcard-back">
+                <span class="face-tr" id="cardTr"></span>
+                <span class="face-ex-en" id="cardExEn"></span>
+                <span class="face-ex-tr" id="cardExTr"></span>
+                <span class="face-syn" id="cardSyn"></span>
+                <div class="face-mnemo" id="cardMnemo"></div>
+              </div>
+            </div>
           </div>
-          <div class="flashcard-face flashcard-back">
-            <span class="face-tr" id="cardTr"></span>
-            <span class="face-ex-en" id="cardExEn"></span>
-            <span class="face-ex-tr" id="cardExTr"></span>
-            <span class="face-syn" id="cardSyn"></span>
-            <div class="face-mnemo" id="cardMnemo"></div>
-          </div>
+          <button type="button" id="cardNext" class="card-arrow" aria-label="Sonraki kelime">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
         </div>
+        <span id="cardPos" class="card-pos">0 / 0</span>
       </div>
       <p class="card-grade-hint">Anlamı gördükten sonra ne kadar kolay hatırladın?</p>
       <div class="card-actions">
         <button id="cardAgain" class="btn btn-bad">Unuttum<small>yarın</small></button>
         <button id="cardHard" class="btn btn-hard">Zor<small>kısa aralık</small></button>
         <button id="cardEasy" class="btn btn-good">Kolay<small>uzun aralık</small></button>
-      </div>
-      <div class="card-nav">
-        <button id="cardPrev" class="btn-ghost">‹ Önceki</button>
-        <span id="cardPos" class="card-pos">0 / 0</span>
-        <button id="cardNext" class="btn-ghost">Sonraki ›</button>
       </div>
       <button id="cardShuffle" class="btn-ghost btn-shuffle">Karıştır</button>
     </div>
@@ -410,6 +457,7 @@
           <input id="dataImport" type="file" accept="application/json,.json" hidden />
         </label>
         <button id="dataReset" class="btn-ghost">Varsayılana dön</button>
+        <button id="placementRetake" class="btn-ghost">Seviye belirleme sınavını tekrar yap</button>
       </div>
       <p id="dataMsg" class="data-msg"></p>
     </details>
@@ -423,5 +471,6 @@
   <script src="qpost.js"></script>
   <script src="gpost.js"></script>
   <script src="daily.js"></script>
+  <script src="placement.js"></script>
 </body>
 </html>

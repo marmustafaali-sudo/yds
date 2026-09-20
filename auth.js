@@ -16,12 +16,13 @@
     if (window.Capacitor && typeof window.Capacitor.isNativePlatform === "function"
         && window.Capacitor.isNativePlatform()) {
       if (gate.parentNode) gate.parentNode.removeChild(gate);
+      document.dispatchEvent(new CustomEvent("yds:authok"));
       return;
     }
 
     var ok = false;
     try { ok = sessionStorage.getItem(SKEY) === "1"; } catch (e) {}
-    if (ok) { gate.parentNode.removeChild(gate); return; }
+    if (ok) { gate.parentNode.removeChild(gate); document.dispatchEvent(new CustomEvent("yds:authok")); return; }
 
     var form = document.getElementById("authForm");
     var input = document.getElementById("authPass");
@@ -34,6 +35,7 @@
         if (pass) {
           try { sessionStorage.setItem(SKEY, "1"); } catch (e2) {}
           gate.parentNode.removeChild(gate);
+          document.dispatchEvent(new CustomEvent("yds:authok"));
         } else {
           err.textContent = "Şifre yanlış.";
           input.select();

@@ -70,6 +70,7 @@
     el.listCount = document.getElementById("listCount");
     el.progressFill = document.getElementById("progressFill");
     el.progressText = document.getElementById("progressText");
+    el.progressPct = document.getElementById("progressPct");
     // card
     el.flashcard = document.getElementById("flashcard");
     el.cardStage = document.getElementById("cardStage");
@@ -316,10 +317,12 @@
   function renderProgress() {
     var total = state.words.length;
     var done = state.words.filter(function (w) { return state.learned[w.id]; }).length;
+    var pct = total ? Math.round(done / total * 100) : 0;
     el.progressText.textContent = done > 0
       ? done + " kelime öğrenildi · YDS'de çıkan sık kelimeler"
       : "YDS'de çıkan sık kelimeler";
-    el.progressFill.style.width = total ? (done / total * 100) + "%" : "0%";
+    if (el.progressPct) el.progressPct.textContent = "%" + pct + " ezberlendi";
+    el.progressFill.style.width = pct + "%";
   }
 
   /* ---------- list ---------- */
@@ -406,7 +409,6 @@
     el.cardStage.hidden = !hasCards;
     el.cardShuffle.hidden = !hasCards;
     document.querySelector(".card-actions").hidden = !hasCards;
-    document.querySelector(".card-nav").hidden = !hasCards;
     var gradeHint = document.querySelector(".card-grade-hint");
     if (gradeHint) gradeHint.hidden = !hasCards;
     if (!hasCards) return;
