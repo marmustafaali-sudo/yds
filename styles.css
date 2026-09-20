@@ -563,19 +563,48 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 /* "Bugün" kartı — günlük hedef + akıllı tekrar + hatırlatma */
 .daily-card {
   background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;
+  padding: 12px 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px;
+  position: relative;
 }
 .daily-card:empty { display: none; }
 .daily-head { display: flex; align-items: center; justify-content: space-between; }
 .daily-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+
+/* Sağ üstteki yuvarlak "Tekrar" / "Günlük hatırlatma" ikonları + popup'ları —
+   kartı kısa tutup kelimeye erişimi hızlandırmak için tam satır yerine bunlar kullanılıyor. */
+.daily-quick { display: flex; gap: 8px; }
+.daily-quick-icon {
+  position: relative; width: 32px; height: 32px; border-radius: 999px; border: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 0;
+  background: #f0fdf4; color: var(--good);
+}
+.daily-quick-icon-notif { background: #eff6ff; color: var(--accent); }
+.daily-quick-icon-notif.is-on { background: var(--accent); color: #fff; }
+.daily-quick-icon.is-open { box-shadow: 0 0 0 2px var(--accent); }
+.daily-quick-badge {
+  position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px; padding: 0 3px;
+  border-radius: 999px; background: var(--bad); color: #fff; font-size: 10px; font-weight: 800;
+  line-height: 16px; text-align: center;
+}
+.daily-popup {
+  position: absolute; top: 44px; right: 12px; z-index: 6; width: min(260px, calc(100% - 24px));
+  background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .2); display: flex; flex-direction: column; gap: 10px;
+}
+.daily-popup-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.daily-popup-title { font-size: 13px; font-weight: 800; color: var(--ink); }
+.daily-popup-close {
+  border: 0; background: var(--line); color: var(--ink-soft); width: 22px; height: 22px;
+  border-radius: 999px; font-size: 11px; cursor: pointer; flex: none;
+}
 .daily-exam {
-  background: var(--bg); color: #fff; border-radius: 12px; padding: 12px 14px;
-  display: flex; flex-direction: column; gap: 5px;
+  background: var(--bg); color: #fff; border-radius: 12px; padding: 9px 14px;
+  display: flex; flex-direction: column; gap: 4px;
 }
 .daily-exam-main { display: flex; align-items: baseline; gap: 8px; }
 .daily-exam-num {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif;
-  font-size: 30px; font-weight: 700; color: #f8fafc; line-height: 1;
+  font-size: 25px; font-weight: 700; color: #f8fafc; line-height: 1;
 }
 .daily-exam-word { font-size: 13px; color: #94a3b8; }
 .daily-exam-sub {
@@ -604,11 +633,6 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .daily-bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
 .daily-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .35s; }
 .daily-bar-fill.is-done { background: var(--good); }
-.daily-review { display: flex; align-items: center; gap: 10px; }
-.daily-review-icon {
-  width: 30px; height: 30px; border-radius: 999px; background: #f0fdf4; color: var(--good);
-  display: flex; align-items: center; justify-content: center; flex: none;
-}
 .daily-review-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
 .daily-muted { color: var(--ink-soft); font-weight: 500; }
 .daily-btn {
@@ -633,10 +657,6 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   font-size: 14px; font-weight: 700; color: var(--good);
 }
 .daily-notif { display: flex; align-items: center; gap: 10px; }
-.daily-notif-icon {
-  width: 30px; height: 30px; border-radius: 999px; background: #eff6ff; color: var(--accent);
-  display: flex; align-items: center; justify-content: center; flex: none;
-}
 .daily-notif-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
 .daily-time {
   border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; font-size: 13px;

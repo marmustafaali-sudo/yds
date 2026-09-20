@@ -25,6 +25,7 @@
   var host = null;
   var words = [];
   var review = null; // { list, i, revealed }
+  var openPopup = null; // null | "review" | "notif" — sağ üstteki yuvarlak ikonların popup'ı
 
   document.addEventListener("DOMContentLoaded", function () {
     host = document.getElementById("dailyCard");
@@ -269,6 +270,7 @@
 
     var head = div("daily-head");
     head.appendChild(span("daily-title", "Bugün"));
+    head.appendChild(quickIcons(due));
     host.appendChild(head);
 
     host.appendChild(examBox());
@@ -296,24 +298,77 @@
     goalRow.appendChild(track);
     host.appendChild(goalRow);
 
-    var rev = div("daily-review");
-    var revIcon = document.createElement("span");
-    revIcon.className = "daily-review-icon";
-    revIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8"></path>' +
-      '<path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"></path></svg>';
-    rev.appendChild(revIcon);
-    if (due.length) {
-      rev.appendChild(span("daily-review-label", "Tekrar: " + due.length + " kelime hazır"));
-      var start = btn("daily-btn", "Başla");
-      start.addEventListener("click", function () { startReview(due); });
-      rev.appendChild(start);
-    } else {
-      rev.appendChild(span("daily-review-label daily-muted", "Bugün tekrar edilecek kelime yok"));
-    }
-    host.appendChild(rev);
+    if (openPopup === "review") host.appendChild(reviewPopup(due));
+    else if (openPopup === "notif" && isNative()) host.appendChild(notifPopup());
+  }
 
-    if (isNative()) host.appendChild(notifRow());
+  /* ---------- sağ üstteki yuvarlak ikonlar + popup'ları (Tekrar / Hatırlatma) ---------- */
+
+  var ICON_REPEAT =
+    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8"></path>' +
+    '<path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"></path></svg>';
+  var ICON_BELL =
+    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>';
+
+  function togglePopup(name) {
+    openPopup = (openPopup === name) ? null : name;
+    render();
+  }
+
+  function quickIcons(due) {
+    var wrap = div("daily-quick");
+
+    var revBtn = btn("daily-quick-icon daily-quick-icon-review" + (openPopup === "review" ? " is-open" : ""), "");
+    revBtn.setAttribute("aria-label", "Tekrar");
+    revBtn.innerHTML = ICON_REPEAT;
+    if (due.length) revBtn.appendChild(span("daily-quick-badge", String(due.length)));
+    revBtn.addEventListener("click", function () { togglePopup("review"); });
+    wrap.appendChild(revBtn);
+
+    if (isNative()) {
+      var n = getNotif();
+      var notifBtn = btn("daily-quick-icon daily-quick-icon-notif" +
+        (openPopup === "notif" ? " is-open" : "") + (n.enabled ? " is-on" : ""), "");
+      notifBtn.setAttribute("aria-label", "Günlük hatırlatma");
+      notifBtn.innerHTML = ICON_BELL;
+      notifBtn.addEventListener("click", function () { togglePopup("notif"); });
+      wrap.appendChild(notifBtn);
+    }
+
+    return wrap;
+  }
+
+  function popupShell(title) {
+    var pop = div("daily-popup");
+    var head = div("daily-popup-head");
+    head.appendChild(span("daily-popup-title", title));
+    var x = btn("daily-popup-close", "✕");
+    x.setAttribute("aria-label", "Kapat");
+    x.addEventListener("click", function () { openPopup = null; render(); });
+    head.appendChild(x);
+    pop.appendChild(head);
+    return pop;
+  }
+
+  function reviewPopup(due) {
+    var pop = popupShell("Tekrar");
+    if (due.length) {
+      pop.appendChild(span("daily-review-label", due.length + " kelime hazır"));
+      var start = btn("daily-btn daily-btn-wide", "Başla");
+      start.addEventListener("click", function () { startReview(due); });
+      pop.appendChild(start);
+    } else {
+      pop.appendChild(span("daily-review-label daily-muted", "Bugün tekrar edilecek kelime yok"));
+    }
+    return pop;
+  }
+
+  function notifPopup() {
+    var pop = popupShell("Günlük hatırlatma");
+    pop.appendChild(notifRow());
+    return pop;
   }
 
   function setGoal(v) {
@@ -326,6 +381,7 @@
 
   function startReview(list) {
     review = { list: list.slice(), i: 0, revealed: false };
+    openPopup = null;
     render();
   }
 
@@ -412,13 +468,7 @@
     var n = getNotif();
     var row = div("daily-notif");
 
-    var icon = document.createElement("span");
-    icon.className = "daily-notif-icon";
-    icon.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>';
-    row.appendChild(icon);
-
-    row.appendChild(span("daily-notif-label", "Günlük hatırlatma"));
+    row.appendChild(span("daily-notif-label", "Saat"));
 
     var time = document.createElement("input");
     time.type = "time";
