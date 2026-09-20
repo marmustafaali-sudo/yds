@@ -13,7 +13,6 @@
     words: [],
     view: "card",
     level: "all",
-    onlyUnlearned: false,
     learned: loadSet(LS_LEARNED),
     // card
     cardDeck: [],
@@ -63,7 +62,6 @@
       gpost: document.getElementById("view-gpost")
     };
     el.levelFilter = document.getElementById("levelFilter");
-    el.onlyUnlearned = document.getElementById("onlyUnlearned");
     el.wordList = document.getElementById("wordList");
     el.listCount = document.getElementById("listCount");
     el.progressFill = document.getElementById("progressFill");
@@ -130,10 +128,6 @@
       el.levelFilter.querySelectorAll(".chip").forEach(function (c) {
         c.classList.toggle("is-active", c === b);
       });
-      renderCurrentView();
-    });
-    el.onlyUnlearned.addEventListener("change", function () {
-      state.onlyUnlearned = el.onlyUnlearned.checked;
       renderCurrentView();
     });
 
@@ -272,7 +266,6 @@
   function filtered() {
     return state.words.filter(function (w) {
       if (state.level !== "all" && w.level !== state.level) return false;
-      if (state.onlyUnlearned && state.learned[w.id]) return false;
       return true;
     });
   }
@@ -288,8 +281,6 @@
     Object.keys(el.views).forEach(function (k) {
       el.views[k].classList.toggle("is-active", k === v);
     });
-    var controls = document.querySelector(".controls");
-    if (controls) controls.hidden = (v === "post" || v === "qpost" || v === "gpost");
     renderCurrentView();
   }
 
@@ -530,9 +521,6 @@
     studied({ wordId: w.id, grade: grade, known: grade !== "again", source: "card" });
     if (state.cardIndex < state.cardDeck.length - 1) {
       state.cardIndex++;
-    }
-    if (state.onlyUnlearned) {
-      buildDeck(false);
     }
     showCard();
   }

@@ -1,18 +1,21 @@
-/* YDS365 Kelime Çalışması — seviye belirleme sınavı.
+/* YDS365 Kelime Çalışması — haftalık seviye belirleme sınavı.
    Ana ekrana zorla açılmaz: alt navigasyonun üstünde ince bir davet çubuğu
    çıkar ("Seviyeni belirle"), dokununca tam ekran akış başlar — A2/B1/B2/C1'den
    5'er soru (kelimenin TR anlamını seç, her seferinde havuzdan rastgele),
-   sonunda önerilen seviyeyi belirler ve Liste/Test'teki seviye filtresini ayarlar. */
+   sonunda önerilen seviyeyi belirler ve Liste/Test'teki seviye filtresini ayarlar.
+   Tamamlandıktan sonra 7 gün kilitli kalır; kalan gün header'da küçük bir
+   satırda gösterilir, davet çubuğu kilit süresince gizli kalır. */
 (function () {
   "use strict";
 
   var LS_LEVEL = "yds.placementLevel.v1";
-  var LS_SKIPPED = "yds.placementSkipped.v1";      // kalıcı: intro'dan "şimdi değil" ile atlandı
+  var LS_LAST_DATE = "yds.placementLastDate.v1"; // "YYYY-MM-DD" — en son tamamlanma günü
   var SS_DISMISSED = "yds.placementPromptDismissed.v1"; // oturumluk: sadece davet çubuğu ✕'lendi
   var LS_TUTORIAL_SEEN = "yds.tutorialSeen.v1"; // tutorial.js ile aynı anahtar
   var LEVELS = ["A2", "B1", "B2", "C1"];
   var PER_LEVEL = 5;
   var PASS_RATIO = 0.6;
+  var LOCK_DAYS = 7;
 
   var els = {};
   var words = [];
@@ -75,16 +78,16 @@
       hidePrompt();
     });
     if (els.start) els.start.addEventListener("click", startQuiz);
-    if (els.skip) els.skip.addEventListener("click", function () { save(LS_SKIPPED, true); hideGate(); });
+    if (els.skip) els.skip.addEventListener("click", function () { hideGate(); showPrompt(); });
     if (els.exit) els.exit.addEventListener("click", function () { hideGate(); showPrompt(); });
     if (els.next) els.next.addEventListener("click", nextQuestion);
     if (els.finish) els.finish.addEventListener("click", finishAndClose);
     if (els.retake) els.retake.addEventListener("click", function () {
       try {
-        localStorage.removeItem(LS_LEVEL);
-        localStorage.removeItem(LS_SKIPPED);
+        localStorage.removeItem(LS_LAST_DATE);
         sessionStorage.removeItem(SS_DISMISSED);
       } catch (e) {}
+      updateLockInfo();
       showPrompt();
     });
   }
@@ -95,8 +98,8 @@
   }
 
   function maybeAutoShow() {
-    var done = load(LS_LEVEL, "") || load(LS_SKIPPED, false);
-    if (done) return;
+    updateLockInfo();
+    if (isLocked()) return; // header'daki küçük satır zaten gösteriyor
     var dismissedNow = false;
     try { dismissedNow = sessionStorage.getItem(SS_DISMISSED) === "1"; } catch (e) {}
     if (dismissedNow) return;
@@ -109,6 +112,36 @@
       return;
     }
     showPrompt();
+  }
+
+  /* ---------- haftalık kilit ---------- */
+
+  function todayISO() {
+    var d = new Date();
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
+  }
+
+  function daysSinceLast() {
+    var last = load(LS_LAST_DATE, "");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(last)) return Infinity; // hiç yapılmamış
+    var a = new Date(last + "T00:00:00");
+    var b = new Date(todayISO() + "T00:00:00");
+    return Math.round((b - a) / 86400000);
+  }
+
+  function isLocked() {
+    return daysSinceLast() < LOCK_DAYS;
+  }
+
+  function updateLockInfo() {
+    var el = document.getElementById("placementLockInfo");
+    if (!el) return;
+    var since = daysSinceLast();
+    if (since >= LOCK_DAYS) { el.hidden = true; return; }
+    var remaining = LOCK_DAYS - since;
+    el.textContent = "Sonraki seviye testine " + remaining + " gün kaldı";
+    el.hidden = false;
   }
 
   function showPrompt() {
@@ -265,8 +298,10 @@
   function finishAndClose() {
     var level = (quiz && quiz.recommended) || "A2";
     save(LS_LEVEL, level);
+    save(LS_LAST_DATE, todayISO());
     hideGate();
     hidePrompt();
+    updateLockInfo();
     applyLevel(level);
   }
 

@@ -70,6 +70,10 @@
         </div>
         <div class="progress-bar"><span id="progressFill"></span></div>
       </div>
+      <div class="header-notes">
+        <span id="examHeaderCountdown" class="header-note" hidden></span>
+        <span id="placementLockInfo" class="header-note" hidden></span>
+      </div>
     </header>
 
     <div id="examBanner" class="exam-banner-wrap" hidden>
@@ -113,7 +117,7 @@
     </button>
   </nav>
 
-  <section class="controls">
+  <section class="controls" hidden>
     <div class="levels" id="levelFilter">
       <button class="chip is-active" data-level="all">Hepsi</button>
       <button class="chip" data-level="A2">A2</button>
@@ -121,9 +125,6 @@
       <button class="chip" data-level="B2">B2</button>
       <button class="chip" data-level="C1">C1</button>
     </div>
-    <label class="only-unlearned">
-      <input type="checkbox" id="onlyUnlearned" /> Sadece öğrenilmemişler
-    </label>
   </section>
 
   <main id="main">

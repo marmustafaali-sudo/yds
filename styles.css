@@ -148,6 +148,8 @@ body {
 .progress-bar span { display: block; height: 100%; width: 0; background: var(--good); transition: width .3s; }
 .progress-text { font-size: 12px; color: #cbd5e1; }
 .progress-pct { font-size: 12.5px; font-weight: 800; color: #fff; flex: none; }
+.header-notes { max-width: var(--maxw); margin: 8px auto 0; display: flex; flex-direction: column; gap: 3px; }
+.header-note { font-size: 11.5px; color: #cbd5e1; }
 
 /* Sınav uyarı banner'ı — sınava <=10 gün kalınca her ekranda header altında sabit */
 .exam-banner-wrap { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 14px; background: var(--bg); }
@@ -155,13 +157,13 @@ body {
   position: relative; overflow: hidden; border-radius: 14px; padding: 14px 16px 12px; text-align: center;
   background: linear-gradient(135deg, #1a1440 0%, #7a1410 55%, #c81f19 100%);
   box-shadow: 0 8px 22px rgba(196,26,20,.35), inset 0 0 0 1px rgba(255,255,255,.06);
-  animation: examBannerPulse 3.6s ease-in-out infinite;
+  animation: examBannerPulse 7s ease-in-out infinite;
 }
 .exam-banner-num {
   display: block; font-family: "Playfair Display", Georgia, "Times New Roman", serif;
   font-size: 38px; font-weight: 700; color: #fff; line-height: 1;
   text-shadow: 0 2px 10px rgba(0,0,0,.35);
-  animation: examNumBlink 3.6s ease-in-out infinite;
+  animation: examNumBlink 7s ease-in-out infinite;
 }
 .exam-banner-label { display: block; font-size: 13px; font-weight: 600; color: #ffe4e1; margin-top: 2px; }
 .exam-banner-sub { display: block; font-size: 11px; color: rgba(255,255,255,.62); margin-top: 6px; font-style: italic; }
@@ -246,7 +248,6 @@ body {
   padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 .chip.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
-.only-unlearned { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft); margin-top: 10px; }
 
 /* Views */
 main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
@@ -599,8 +600,12 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .daily-bar { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
 .daily-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .35s; }
 .daily-bar-fill.is-done { background: var(--good); }
-.daily-review { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.daily-review-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+.daily-review { display: flex; align-items: center; gap: 10px; }
+.daily-review-icon {
+  width: 30px; height: 30px; border-radius: 999px; background: #f0fdf4; color: var(--good);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.daily-review-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
 .daily-muted { color: var(--ink-soft); font-weight: 500; }
 .daily-btn {
   border: 0; border-radius: 9px; padding: 10px 14px; font-size: 13px; font-weight: 700;

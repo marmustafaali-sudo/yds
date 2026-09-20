@@ -127,28 +127,41 @@
     return box;
   }
 
-  // her ekranda header'ın altında sabit, sınava <=10 gün kalınca yanıp sönen banner
+  // <=10 gün kalınca her ekranda header altında sabit, kırmızı yanıp sönen büyük banner;
+  // daha uzun vadede header içinde küçük, sakin bir geri sayım satırı gösterilir.
   var BANNER_THRESHOLD = 10;
   function renderExamBanner() {
     var wrap = document.getElementById("examBanner");
+    var smallEl = document.getElementById("examHeaderCountdown");
     if (!wrap) return;
     var exam = getExam();
     var left = daysToExam(exam);
-    if (left < 0 || left > BANNER_THRESHOLD) {
-      wrap.hidden = true;
-      return;
-    }
-    var numEl = document.getElementById("examBannerNum");
-    var labelEl = document.getElementById("examBannerLabel");
-    if (left === 0) {
-      numEl.textContent = "Bugün";
-      labelEl.textContent = "sınav günü — başarılar!";
+    var type = examTypeLabel(getExamType());
+
+    if (left >= 0 && left <= BANNER_THRESHOLD) {
+      var numEl = document.getElementById("examBannerNum");
+      var labelEl = document.getElementById("examBannerLabel");
+      if (left === 0) {
+        numEl.textContent = "Bugün";
+        labelEl.textContent = "sınav günü — başarılar!";
+      } else {
+        numEl.textContent = String(left);
+        labelEl.textContent = "gün kaldı";
+      }
+      document.getElementById("examBannerSub").textContent = type + " · " + fmtLongDate(exam);
+      wrap.hidden = false;
+      if (smallEl) smallEl.hidden = true;
     } else {
-      numEl.textContent = String(left);
-      labelEl.textContent = "gün kaldı";
+      wrap.hidden = true;
+      if (smallEl) {
+        if (left > BANNER_THRESHOLD) {
+          smallEl.textContent = type + " sınavına " + left + " gün kaldı";
+          smallEl.hidden = false;
+        } else {
+          smallEl.hidden = true; // tüm oturumlar geçti
+        }
+      }
     }
-    document.getElementById("examBannerSub").textContent = examTypeLabel(getExamType()) + " · " + fmtLongDate(exam);
-    wrap.hidden = false;
   }
   function getLog() {
     var l = load(LS_LOG, null);
@@ -284,13 +297,19 @@
     host.appendChild(goalRow);
 
     var rev = div("daily-review");
+    var revIcon = document.createElement("span");
+    revIcon.className = "daily-review-icon";
+    revIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M17 2.1l4 4-4 4"></path><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8"></path>' +
+      '<path d="M7 21.9l-4-4 4-4"></path><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"></path></svg>';
+    rev.appendChild(revIcon);
     if (due.length) {
-      rev.appendChild(span("daily-review-label", "🔁 Tekrar: " + due.length + " kelime hazır"));
+      rev.appendChild(span("daily-review-label", "Tekrar: " + due.length + " kelime hazır"));
       var start = btn("daily-btn", "Başla");
       start.addEventListener("click", function () { startReview(due); });
       rev.appendChild(start);
     } else {
-      rev.appendChild(span("daily-review-label daily-muted", "🔁 Bugün tekrar edilecek kelime yok"));
+      rev.appendChild(span("daily-review-label daily-muted", "Bugün tekrar edilecek kelime yok"));
     }
     host.appendChild(rev);
 
