@@ -147,8 +147,14 @@ body {
 .progress-bar span { display: block; height: 100%; width: 0; background: var(--good); transition: width .3s; }
 .progress-text { font-size: 12px; color: #cbd5e1; }
 .progress-pct { font-size: 12.5px; font-weight: 800; color: #fff; flex: none; }
-.header-notes { max-width: var(--maxw); margin: 8px auto 0; display: flex; flex-direction: column; gap: 3px; }
+.header-notes { max-width: var(--maxw); margin: 8px auto 0; display: flex; flex-direction: column; gap: 6px; }
 .header-note { font-size: 11.5px; color: #cbd5e1; }
+.header-exam-types { display: flex; gap: 6px; }
+.header-exam-type {
+  flex: 1; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: #cbd5e1;
+  border-radius: 7px; padding: 6px 4px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+}
+.header-exam-type.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 /* Sınav uyarı banner'ı — sınava <=10 gün kalınca her ekranda header altında sabit */
 .exam-banner-wrap { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 14px; background: var(--bg); }
@@ -303,7 +309,10 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
 }
 .face-pos { font-size: 13px; color: var(--neutral); font-style: italic; }
-.face-hint { font-size: 12px; color: var(--neutral); margin-top: 10px; }
+.face-hint {
+  font-size: 12px; color: var(--neutral); margin-top: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
 .face-tr { font-size: 22px; font-weight: 700; color: var(--ink); }
 .face-ex-en { font-size: 15px; color: var(--ink); margin-top: 6px; }
 .face-ex-tr { font-size: 14px; color: var(--ink-soft); }
@@ -597,26 +606,6 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   border: 0; background: var(--line); color: var(--ink-soft); width: 22px; height: 22px;
   border-radius: 999px; font-size: 11px; cursor: pointer; flex: none;
 }
-.daily-exam {
-  background: var(--bg); color: #fff; border-radius: 12px; padding: 9px 14px;
-  display: flex; flex-direction: column; gap: 4px;
-}
-.daily-exam-main { display: flex; align-items: baseline; gap: 8px; }
-.daily-exam-num {
-  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
-  font-size: 25px; font-weight: 700; color: #f8fafc; line-height: 1;
-}
-.daily-exam-word { font-size: 13px; color: #94a3b8; }
-.daily-exam-sub {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  font-size: 12px; color: #cbd5e1;
-}
-.daily-exam-types { display: flex; gap: 6px; margin-top: 2px; }
-.daily-exam-type {
-  flex: 1; background: #1e293b; border: 1px solid #334155; color: #cbd5e1;
-  border-radius: 7px; padding: 6px 4px; font-size: 11.5px; font-weight: 700; cursor: pointer;
-}
-.daily-exam-type.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .daily-gear {
   border: 0; background: none; font-size: 15px; line-height: 1; cursor: pointer;
   color: var(--ink-soft); padding: 2px 4px;

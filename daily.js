@@ -94,50 +94,41 @@
         { day: "numeric", month: "long", year: "numeric" });
     } catch (e) { return isoStr; }
   }
-  function examBox() {
-    var type = getExamType();
-    var exam = getExam();
-    var left = daysToExam(exam);
-    var box = div("daily-exam");
-
-    var main = div("daily-exam-main");
-    if (left > 0) {
-      main.appendChild(span("daily-exam-num", String(left)));
-      main.appendChild(span("daily-exam-word", "gün kaldı"));
-    } else if (left === 0) {
-      main.appendChild(span("daily-exam-num", "Bugün"));
-      main.appendChild(span("daily-exam-word", "sınav günü — başarılar!"));
-    } else {
-      main.appendChild(span("daily-exam-num", "—"));
-      main.appendChild(span("daily-exam-word", type + "'in bu yılki oturumları geçti"));
-    }
-    box.appendChild(main);
-
-    var sub = div("daily-exam-sub");
-    sub.appendChild(span("", examTypeLabel(type) + " · " + fmtLongDate(exam)));
-    box.appendChild(sub);
-
-    var typeRow = div("daily-exam-types");
-    ["YDS", "YOKDIL"].forEach(function (t) {
-      var b = btn("daily-exam-type" + (t === type ? " is-active" : ""), examTypeLabel(t));
-      b.addEventListener("click", function () { save(LS_EXAM_TYPE, t); render(); });
-      typeRow.appendChild(b);
+  var headerTypesBound = false;
+  function bindHeaderExamTypes() {
+    if (headerTypesBound) return;
+    var wrap = document.getElementById("headerExamTypes");
+    if (!wrap) return;
+    headerTypesBound = true;
+    wrap.querySelectorAll(".header-exam-type").forEach(function (b) {
+      b.addEventListener("click", function () {
+        save(LS_EXAM_TYPE, b.getAttribute("data-type"));
+        render();
+      });
     });
-    box.appendChild(typeRow);
-
-    return box;
   }
 
   // <=10 gün kalınca her ekranda header altında sabit, kırmızı yanıp sönen büyük banner;
-  // daha uzun vadede header içinde küçük, sakin bir geri sayım satırı gösterilir.
+  // daha uzun vadede header içinde küçük, sakin bir geri sayım satırı gösterilir. Sınav
+  // türü (YDS/YÖKDİL) seçimi de "Bugün" kartını şişirmemek için header'da yaşıyor.
   var BANNER_THRESHOLD = 10;
   function renderExamBanner() {
     var wrap = document.getElementById("examBanner");
     var smallEl = document.getElementById("examHeaderCountdown");
     if (!wrap) return;
+    bindHeaderExamTypes();
     var exam = getExam();
     var left = daysToExam(exam);
-    var type = examTypeLabel(getExamType());
+    var type = getExamType();
+
+    var typesEl = document.getElementById("headerExamTypes");
+    if (typesEl) {
+      typesEl.hidden = false;
+      typesEl.querySelectorAll(".header-exam-type").forEach(function (b) {
+        b.classList.toggle("is-active", b.getAttribute("data-type") === type);
+      });
+    }
+    type = examTypeLabel(type);
 
     if (left >= 0 && left <= BANNER_THRESHOLD) {
       var numEl = document.getElementById("examBannerNum");
@@ -272,8 +263,6 @@
     head.appendChild(span("daily-title", "Bugün"));
     head.appendChild(quickIcons(due));
     host.appendChild(head);
-
-    host.appendChild(examBox());
 
     var goalRow = div("daily-goal");
     var top = div("daily-goal-top");

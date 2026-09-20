@@ -58,6 +58,10 @@
       </div>
       <div class="header-notes">
         <span id="examHeaderCountdown" class="header-note" hidden></span>
+        <div id="headerExamTypes" class="header-exam-types" hidden>
+          <button type="button" class="header-exam-type" data-type="YDS">YDS</button>
+          <button type="button" class="header-exam-type" data-type="YOKDIL">YÖKDİL</button>
+        </div>
       </div>
     </header>
 
@@ -148,7 +152,10 @@
                 <span class="face-pos" id="cardPosFront"></span>
                 <span class="face-cue" id="cardCue" hidden></span>
                 <button type="button" class="card-hint-btn" id="cardHintBtn">İpucu ver</button>
-                <span class="face-hint">Anlamı görmek için dokun</span>
+                <span class="face-hint">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5V6a1.5 1.5 0 0 1 3 0v4"></path><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V10"></path><path d="M15 10.2V6.5a1.5 1.5 0 0 1 3 0V13"></path><path d="M9 11.5c0-1-3-1.3-3 .7 0 3.5 1.5 7.8 6 7.8s6-3 6-6.5v-3"></path></svg>
+                  Anlamı görmek için üstüne tıkla
+                </span>
               </div>
               <div class="flashcard-face flashcard-back">
                 <span class="face-tr" id="cardTr"></span>
