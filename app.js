@@ -13,7 +13,6 @@
     words: [],
     view: "card",
     level: "all",
-    search: "",
     onlyUnlearned: false,
     learned: loadSet(LS_LEARNED),
     // card
@@ -63,7 +62,6 @@
       qpost: document.getElementById("view-qpost"),
       gpost: document.getElementById("view-gpost")
     };
-    el.search = document.getElementById("search");
     el.levelFilter = document.getElementById("levelFilter");
     el.onlyUnlearned = document.getElementById("onlyUnlearned");
     el.wordList = document.getElementById("wordList");
@@ -124,10 +122,6 @@
   function bindEls() {
     el.tabs.forEach(function (t) {
       t.addEventListener("click", function () { setView(t.getAttribute("data-view")); });
-    });
-    el.search.addEventListener("input", function () {
-      state.search = el.search.value.trim().toLowerCase();
-      renderList();
     });
     el.levelFilter.addEventListener("click", function (e) {
       var b = e.target.closest(".chip");
@@ -279,10 +273,6 @@
     return state.words.filter(function (w) {
       if (state.level !== "all" && w.level !== state.level) return false;
       if (state.onlyUnlearned && state.learned[w.id]) return false;
-      if (state.search) {
-        var hay = (w.en + " " + (w.tr || []).join(" ") + " " + (w.synonyms || []).join(" ")).toLowerCase();
-        if (hay.indexOf(state.search) === -1) return false;
-      }
       return true;
     });
   }

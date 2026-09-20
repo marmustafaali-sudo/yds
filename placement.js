@@ -7,7 +7,8 @@
   "use strict";
 
   var LS_LEVEL = "yds.placementLevel.v1";
-  var LS_SKIPPED = "yds.placementSkipped.v1";
+  var LS_SKIPPED = "yds.placementSkipped.v1";      // kalıcı: intro'dan "şimdi değil" ile atlandı
+  var SS_DISMISSED = "yds.placementPromptDismissed.v1"; // oturumluk: sadece davet çubuğu ✕'lendi
   var LS_TUTORIAL_SEEN = "yds.tutorialSeen.v1"; // tutorial.js ile aynı anahtar
   var LEVELS = ["A2", "B1", "B2", "C1"];
   var PER_LEVEL = 5;
@@ -69,16 +70,22 @@
 
   function bind() {
     if (els.promptOpen) els.promptOpen.addEventListener("click", function () { hidePrompt(); showIntro(); });
-    if (els.promptClose) els.promptClose.addEventListener("click", function () { save(LS_SKIPPED, true); hidePrompt(); });
+    if (els.promptClose) els.promptClose.addEventListener("click", function () {
+      try { sessionStorage.setItem(SS_DISMISSED, "1"); } catch (e) {}
+      hidePrompt();
+    });
     if (els.start) els.start.addEventListener("click", startQuiz);
     if (els.skip) els.skip.addEventListener("click", function () { save(LS_SKIPPED, true); hideGate(); });
     if (els.exit) els.exit.addEventListener("click", function () { hideGate(); showPrompt(); });
     if (els.next) els.next.addEventListener("click", nextQuestion);
     if (els.finish) els.finish.addEventListener("click", finishAndClose);
     if (els.retake) els.retake.addEventListener("click", function () {
-      try { localStorage.removeItem(LS_LEVEL); localStorage.removeItem(LS_SKIPPED); } catch (e) {}
-      hidePrompt();
-      showIntro();
+      try {
+        localStorage.removeItem(LS_LEVEL);
+        localStorage.removeItem(LS_SKIPPED);
+        sessionStorage.removeItem(SS_DISMISSED);
+      } catch (e) {}
+      showPrompt();
     });
   }
 
@@ -90,6 +97,9 @@
   function maybeAutoShow() {
     var done = load(LS_LEVEL, "") || load(LS_SKIPPED, false);
     if (done) return;
+    var dismissedNow = false;
+    try { dismissedNow = sessionStorage.getItem(SS_DISMISSED) === "1"; } catch (e) {}
+    if (dismissedNow) return;
     // words henüz gelmediyse biraz bekle
     if (!words.length) {
       document.addEventListener("yds:words", function () {

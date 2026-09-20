@@ -35,13 +35,22 @@
         finish(false);
         return;
       }
-      setTimeout(function () { build(); start(); }, 350);
+      // Kelimeler henüz gelmediyse kart boş/gizli olabilir (yanlış konumda
+      // spotlight göstermeyelim) — gerçek kart içeriği render olana kadar bekle.
+      waitForWords(function () {
+        setTimeout(function () { build(); start(); }, 350);
+      });
     });
   });
 
   function waitForAuth(cb) {
     if (!document.getElementById("authGate")) { cb(); return; }
     document.addEventListener("yds:authok", cb, { once: true });
+  }
+
+  function waitForWords(cb) {
+    if (window.YDSWords && window.YDSWords.length) { cb(); return; }
+    document.addEventListener("yds:words", cb, { once: true });
   }
 
   function build() {
@@ -76,6 +85,7 @@
     if (!s || !el) { next(); return; }
 
     var r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) { next(); return; } // gizli/render olmamış eleman — atla
     var pad = 8;
     spot.style.left = (r.left - pad) + "px";
     spot.style.top = (r.top - pad) + "px";

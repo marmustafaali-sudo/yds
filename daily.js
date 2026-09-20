@@ -392,7 +392,14 @@
   function notifRow() {
     var n = getNotif();
     var row = div("daily-notif");
-    row.appendChild(span("daily-notif-label", "🔔 Günlük hatırlatma"));
+
+    var icon = document.createElement("span");
+    icon.className = "daily-notif-icon";
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>';
+    row.appendChild(icon);
+
+    row.appendChild(span("daily-notif-label", "Günlük hatırlatma"));
 
     var time = document.createElement("input");
     time.type = "time";

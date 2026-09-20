@@ -161,6 +161,7 @@ body {
   display: block; font-family: "Playfair Display", Georgia, "Times New Roman", serif;
   font-size: 38px; font-weight: 700; color: #fff; line-height: 1;
   text-shadow: 0 2px 10px rgba(0,0,0,.35);
+  animation: examNumBlink 3.6s ease-in-out infinite;
 }
 .exam-banner-label { display: block; font-size: 13px; font-weight: 600; color: #ffe4e1; margin-top: 2px; }
 .exam-banner-sub { display: block; font-size: 11px; color: rgba(255,255,255,.62); margin-top: 6px; font-style: italic; }
@@ -168,8 +169,12 @@ body {
   0%, 100% { box-shadow: 0 8px 22px rgba(196,26,20,.35), inset 0 0 0 1px rgba(255,255,255,.06); }
   50%      { box-shadow: 0 8px 34px rgba(228,50,43,.7), inset 0 0 0 1px rgba(255,255,255,.14); }
 }
+@keyframes examNumBlink {
+  0%, 45%, 100% { opacity: 1; }
+  70% { opacity: .35; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .exam-banner { animation: none; }
+  .exam-banner, .exam-banner-num { animation: none; }
 }
 
 /* Alt navigasyon çubuğu */
@@ -235,12 +240,7 @@ body {
 
 /* Controls */
 .controls { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 4px; }
-#search {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
-  font-size: 15px; background: #fff; outline: none;
-}
-#search:focus { border-color: var(--accent); }
-.levels { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.levels { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip {
   border: 1px solid var(--line); background: #fff; color: var(--ink-soft);
   padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -624,6 +624,10 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   font-size: 14px; font-weight: 700; color: var(--good);
 }
 .daily-notif { display: flex; align-items: center; gap: 10px; }
+.daily-notif-icon {
+  width: 30px; height: 30px; border-radius: 999px; background: #eff6ff; color: var(--accent);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
 .daily-notif-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
 .daily-time {
   border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; font-size: 13px;
