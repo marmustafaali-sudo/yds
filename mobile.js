@@ -24,6 +24,12 @@
   onReady(function () {
     document.body.classList.add("is-native");
 
+    // --- veri panelinin başlığı: native'de ham dışa/içe aktarma yok, sadece sınav/tur tekrarı ---
+    try {
+      var panelSummary = document.querySelector(".data-panel summary");
+      if (panelSummary) panelSummary.textContent = "Ayarlar";
+    } catch (e) {}
+
     // --- durum çubuğu ---
     try {
       if (P.StatusBar) {

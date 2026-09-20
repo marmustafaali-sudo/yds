@@ -5,6 +5,11 @@
 (function () {
   "use strict";
 
+  // Sadece telefon appinde (Capacitor native) çalışır — web'de klasik arayüz zaten
+  // görünür durumda, ayrı bir kullanım turuna gerek yok.
+  var C = window.Capacitor;
+  if (!C || typeof C.isNativePlatform !== "function" || !C.isNativePlatform()) return;
+
   var LS_SEEN = "yds.tutorialSeen.v1";
 
   var STEPS = [

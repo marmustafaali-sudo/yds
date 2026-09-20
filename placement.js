@@ -8,6 +8,11 @@
 (function () {
   "use strict";
 
+  // Sadece telefon appinde (Capacitor native) çalışır — web'de klasik seviye
+  // filtresi + arama zaten görünür, ayrı bir sınav akışına gerek yok.
+  var C = window.Capacitor;
+  if (!C || typeof C.isNativePlatform !== "function" || !C.isNativePlatform()) return;
+
   var LS_LEVEL = "yds.placementLevel.v1";
   var LS_LAST_DATE = "yds.placementLastDate.v1"; // "YYYY-MM-DD" — en son tamamlanma günü
   var SS_DISMISSED = "yds.placementPromptDismissed.v1"; // oturumluk: sadece davet çubuğu ✕'lendi

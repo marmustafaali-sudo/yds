@@ -242,12 +242,18 @@ body {
 
 /* Controls */
 .controls { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 4px; }
-.levels { display: flex; gap: 6px; flex-wrap: wrap; }
+#search {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  font-size: 15px; background: #fff; outline: none;
+}
+#search:focus { border-color: var(--accent); }
+.levels { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 .chip {
   border: 1px solid var(--line); background: #fff; color: var(--ink-soft);
   padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 .chip.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.only-unlearned { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft); margin-top: 10px; }
 
 /* Views */
 main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
@@ -547,14 +553,32 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
   #postCanvas, #cdCanvas, #gPostCanvas { max-width: 400px; }
 }
 
-/* Native (Capacitor) uygulamada Post sekmesi + veri paneli gizli — içerik araçları. */
+/* Native (Capacitor) uygulamada Post sekmesi + ham veri araçları gizli — içerik/yedek araçları,
+   sitede (web) kalsın. Seviye belirleme sınavını tekrar yap / turu tekrar göster butonları
+   ayakta kalır (native'in tek "ayarlar" erişimi onlar). */
 .is-native .tab[data-view="post"],
 .is-native #view-post,
 .is-native .tab[data-view="qpost"],
 .is-native #view-qpost,
 .is-native .tab[data-view="gpost"],
 .is-native #view-gpost,
-.is-native .app-footer { display: none !important; }
+.is-native #dataExportWords,
+.is-native #dataExportAll,
+.is-native .data-import-label,
+.is-native #dataReset { display: none !important; }
+
+/* Arama / seviye filtresi / sadece-öğrenilmemiş — web'in klasik liste araçları, native'de
+   (telefon appi) sadeleştirilmiş kart deneyimi lehine gizli. */
+.is-native .controls { display: none !important; }
+
+/* Header yüzdesi — kart+ok navigasyonuyla birlikte gelen "ergonomik" telefon appi özelliği. */
+#progressPct { display: none; }
+.is-native #progressPct { display: inline; }
+
+/* Seviye sınavı / kullanım turu tekrar butonları — sadece native'de bağlı (placement.js,
+   tutorial.js web'de hiç çalışmıyor), o yüzden web'de gösterilmesin. */
+#placementRetake, #tutorialRetake { display: none; }
+.is-native #placementRetake, .is-native #tutorialRetake { display: inline-block; }
 
 /* "Bugün" kartı — günlük hedef + akıllı tekrar + hatırlatma */
 .daily-card {
