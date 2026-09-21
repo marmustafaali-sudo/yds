@@ -1,10 +1,19 @@
 name = "yds"
 compatibility_date = "2026-09-12"
+main = "worker.js"
 
-# Statik site (Post üretici + words.json çalışma uygulaması). Sunucu tarafı
-# Worker kodu yok. Web dosyaları zaten repo kökünde (index.html, app.js,
-# post.js, ...) — build adımı GEREKMİYOR, doğrudan kökten deploy ediliyor.
-# İstenmeyen dosyalar (node_modules, android/, ...) .assetsignore ile hariç.
+# Statik site (Post üretici + words.json çalışma uygulaması) + hafif bir Worker
+# katmanı (worker.js) sadece /api/leaderboard/* için — geri kalan her istek
+# aynen eskisi gibi ASSETS'e (statik dosyalara) düşer. Web dosyaları zaten repo
+# kökünde (index.html, app.js, post.js, ...) — build adımı GEREKMİYOR, doğrudan
+# kökten deploy ediliyor. İstenmeyen dosyalar (node_modules, android/, ...)
+# .assetsignore ile hariç.
 [assets]
 directory = "."
+binding = "ASSETS"
 not_found_handling = "404-page"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "yds-leaderboard"
+database_id = "7608e989-397a-4092-bd72-4842c5d9fff5"
