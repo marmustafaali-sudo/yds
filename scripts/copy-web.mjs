@@ -17,6 +17,7 @@ const FILES = [
   "mobile.js",
   "daily.js",
   "placement.js",
+  "leaderboard.js",
   "styles.css",
   "words.json",
   "questions.json",

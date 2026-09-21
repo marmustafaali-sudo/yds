@@ -801,6 +801,9 @@
       };
       saveJSON(LS_BEST, best);
     }
+    document.dispatchEvent(new CustomEvent("yds:quizFinished", {
+      detail: { points: points, level: key, score: score, total: total, maxStreak: state.quiz.maxStreak }
+    }));
     el.quizPointsBig.textContent = fmtNum(points) + " puan";
     el.quizBest.textContent = isRecord
       ? "🏆 Yeni rekor! (" + labelLevel(key) + ")"

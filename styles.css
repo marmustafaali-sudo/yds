@@ -201,7 +201,7 @@ body {
 .tab svg { width: 22px; height: 22px; display: block; }
 .tab.is-active { color: var(--accent); }
 
-/* "Seviye" sekmesi — durum kartı + geçmiş sınavlar grafiği */
+/* "Seviye" sekmesi — durum kartı */
 .level-status { padding: 4px 2px 0; }
 .level-card {
   background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
@@ -214,22 +214,34 @@ body {
 .level-card p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
 .level-card .placement-levels { width: 100%; }
 .level-card-locked .placement-level-chip { width: 44px; height: 44px; font-size: 14px; }
-.level-history { margin-top: 18px; }
-.level-history-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
-.level-chart {
-  display: flex; align-items: flex-end; gap: 10px; overflow-x: auto; padding: 4px 2px 6px;
-  min-height: 130px;
+
+/* Haftalık lider tablosu (opt-in, sadece native) — "Seviye" sekmesinin devamı */
+.lb-section { margin-top: 18px; }
+.lb-section .level-card { padding: 22px 18px; }
+.lb-nick-input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  font-size: 15px; background: #fff; outline: none; text-align: center;
 }
-.level-chart-col {
-  display: flex; flex-direction: column; align-items: center; gap: 4px; flex: none; width: 40px;
+.lb-nick-input:focus { border-color: var(--accent); }
+.lb-msg { font-size: 12.5px; color: var(--bad); min-height: 16px; }
+.lb-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.lb-title { font-size: 15px; font-weight: 800; color: var(--ink); }
+.lb-leave { border: 0; background: none; color: var(--ink-soft); font-size: 12.5px; cursor: pointer; padding: 4px; }
+.lb-me {
+  display: flex; align-items: center; gap: 10px; background: #eff6ff; border-radius: 12px;
+  padding: 10px 14px; font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 12px;
 }
-.level-chart-track {
-  width: 22px; height: 84px; background: var(--line); border-radius: 999px; overflow: hidden;
-  display: flex; align-items: flex-end;
+.lb-me-rank { color: var(--accent); font-size: 15px; }
+.lb-me-total { margin-left: auto; font-weight: 600; color: var(--ink-soft); }
+.lb-list { display: flex; flex-direction: column; gap: 6px; }
+.lb-row {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px;
+  background: #fff; border: 1px solid var(--line); font-size: 13.5px;
 }
-.level-chart-fill { width: 100%; border-radius: 999px; min-height: 4px; }
-.level-chart-pct { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); }
-.level-chart-date { font-size: 10px; color: var(--ink-soft); }
+.lb-rank { width: 30px; flex: none; font-weight: 800; color: var(--ink-soft); }
+.lb-nick { flex: 1; font-weight: 700; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-pts { font-weight: 700; color: var(--accent); flex: none; }
+.lb-empty { font-size: 13px; color: var(--ink-soft); text-align: center; padding: 16px 0; }
 
 /* Controls */
 .controls { max-width: var(--maxw); margin: 0 auto; padding: 12px 16px 4px; }
