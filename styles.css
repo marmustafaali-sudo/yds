@@ -602,7 +602,6 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .daily-quick-icon-notif { background: #eff6ff; color: var(--accent); }
 .daily-quick-icon-notif.is-on { background: var(--accent); color: #fff; }
 .daily-quick-icon-streak { background: #fff7ed; color: var(--b2); }
-.daily-quick-icon-badges { background: #faf5ff; color: var(--c1); }
 .daily-quick-icon.is-open { box-shadow: 0 0 0 2px var(--accent); }
 .daily-quick-badge {
   position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px; padding: 0 3px;
@@ -636,21 +635,27 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 8px 16px; }
 .streak-cell.is-done { background: var(--b2); }
 .streak-cell.is-today { box-shadow: 0 0 0 1.5px var(--ink-soft); }
 
-/* Rozetler popup'u */
-.badge-list { display: flex; flex-direction: column; gap: 8px; }
-.badge-row {
-  display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px;
-  background: #f8fafc; opacity: .55;
+/* "Rozetler" sekmesi */
+.badges-summary { padding: 4px 2px 0; margin-bottom: 18px; }
+.badges-summary-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+.badges-summary-label { font-size: 16px; font-weight: 800; color: var(--ink); }
+.badges-summary-count { font-size: 13px; font-weight: 800; color: var(--c1); }
+.badges-summary-bar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.badges-summary-fill { height: 100%; background: linear-gradient(90deg, var(--c1), var(--accent)); border-radius: 999px; transition: width .35s; }
+.badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.badge-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 16px; padding: 16px 8px;
+  opacity: .55;
 }
-.badge-row.is-unlocked { opacity: 1; background: #faf5ff; }
-.badge-icon {
-  width: 32px; height: 32px; border-radius: 999px; flex: none; background: var(--line); color: var(--ink-soft);
+.badge-card.is-unlocked { opacity: 1; background: #faf5ff; border-color: #e9d5ff; }
+.badge-card-icon {
+  width: 40px; height: 40px; border-radius: 999px; background: var(--line); color: var(--ink-soft);
   display: flex; align-items: center; justify-content: center;
 }
-.badge-row.is-unlocked .badge-icon { background: #f3e8ff; color: var(--c1); }
-.badge-texts { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.badge-name { font-size: 12.5px; font-weight: 700; color: var(--ink); }
-.badge-desc { font-size: 11px; color: var(--ink-soft); }
+.badge-card.is-unlocked .badge-card-icon { background: #f3e8ff; color: var(--c1); }
+.badge-card-name { font-size: 11.5px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.badge-card-desc { font-size: 9.5px; color: var(--ink-soft); line-height: 1.3; }
 
 .daily-gear {
   border: 0; background: none; font-size: 15px; line-height: 1; cursor: pointer;

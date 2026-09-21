@@ -253,6 +253,7 @@
 
   function render() {
     renderExamBanner();
+    renderBadgesTab();
     if (!host) return;
     if (review) { renderReview(); return; }
 
@@ -293,7 +294,6 @@
 
     if (openPopup === "review") host.appendChild(reviewPopup(due));
     else if (openPopup === "streak") host.appendChild(streakPopup());
-    else if (openPopup === "badges") host.appendChild(badgesPopup());
     else if (openPopup === "notif" && isNative()) host.appendChild(notifPopup());
   }
 
@@ -335,12 +335,6 @@
     if (streakN > 0) streakBtn.appendChild(span("daily-quick-badge daily-quick-badge-streak", String(streakN)));
     streakBtn.addEventListener("click", function () { togglePopup("streak"); });
     wrap.appendChild(streakBtn);
-
-    var badgesBtn = btn("daily-quick-icon daily-quick-icon-badges" + (openPopup === "badges" ? " is-open" : ""), "");
-    badgesBtn.setAttribute("aria-label", "Rozetler");
-    badgesBtn.innerHTML = ICON_MEDAL;
-    badgesBtn.addEventListener("click", function () { togglePopup("badges"); });
-    wrap.appendChild(badgesBtn);
 
     if (isNative()) {
       var n = getNotif();
@@ -491,27 +485,37 @@
     ];
   }
 
-  function badgesPopup() {
-    var pop = popupShell("Rozetler");
+  function renderBadgesTab() {
+    var summaryEl = document.getElementById("badgesSummary");
+    var gridEl = document.getElementById("badgesGrid");
+    if (!summaryEl || !gridEl) return;
+
     var badges = badgeList();
     var unlockedN = badges.filter(function (b) { return b.unlocked; }).length;
-    pop.appendChild(span("streak-best daily-muted", unlockedN + " / " + badges.length + " rozet açıldı"));
+    var pct = Math.round((unlockedN / badges.length) * 100);
 
-    var list = div("badge-list");
+    summaryEl.innerHTML = "";
+    var top = div("badges-summary-top");
+    top.appendChild(span("badges-summary-label", "Rozetler"));
+    top.appendChild(span("badges-summary-count", unlockedN + " / " + badges.length));
+    summaryEl.appendChild(top);
+    var track = div("badges-summary-bar");
+    var fill = div("badges-summary-fill");
+    fill.style.width = pct + "%";
+    track.appendChild(fill);
+    summaryEl.appendChild(track);
+
+    gridEl.innerHTML = "";
     badges.forEach(function (b) {
-      var row = div("badge-row" + (b.unlocked ? " is-unlocked" : ""));
+      var card = div("badge-card" + (b.unlocked ? " is-unlocked" : ""));
       var icon = document.createElement("span");
-      icon.className = "badge-icon";
+      icon.className = "badge-card-icon";
       icon.innerHTML = b.icon;
-      row.appendChild(icon);
-      var texts = div("badge-texts");
-      texts.appendChild(span("badge-name", b.name));
-      texts.appendChild(span("badge-desc", b.unlocked || !b.progress ? b.desc : b.progress));
-      row.appendChild(texts);
-      list.appendChild(row);
+      card.appendChild(icon);
+      card.appendChild(span("badge-card-name", b.name));
+      card.appendChild(span("badge-card-desc", b.unlocked || !b.progress ? b.desc : b.progress));
+      gridEl.appendChild(card);
     });
-    pop.appendChild(list);
-    return pop;
   }
 
   function setGoal(v) {

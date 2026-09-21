@@ -60,6 +60,7 @@
       card: document.getElementById("view-card"),
       quiz: document.getElementById("view-quiz"),
       level: document.getElementById("view-level"),
+      badges: document.getElementById("view-badges"),
       post: document.getElementById("view-post"),
       qpost: document.getElementById("view-qpost"),
       gpost: document.getElementById("view-gpost")
