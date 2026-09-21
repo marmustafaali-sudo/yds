@@ -6,9 +6,13 @@
   var LS_GOAL  = "yds.dailyGoal.v1";  // number
   var LS_LOG   = "yds.dailyLog.v1";   // { date, ids: [] }
   var LS_SRS   = "yds.srs.v1";        // { wordId: { box, due } }
-  var LS_DONE  = "yds.doneDays.v1";   // ["YYYY-MM-DD", ...]  (ileride streak takvimi için)
+  var LS_DONE  = "yds.doneDays.v1";   // ["YYYY-MM-DD", ...] — hedefi tutturulan günler
   var LS_NOTIF = "yds.notif.v1";      // { enabled, time }
   var LS_EXAM_TYPE = "yds.examType.v1"; // "YDS" | "YOKDIL"
+  var LS_LEARNED = "yds.learned.v1";  // { wordId: true } — app.js ile aynı anahtar
+  var LS_BEST = "yds.quizBest.v1";    // { level: {points,pct,score,total,maxStreak,date} } — app.js ile aynı
+  var LS_PLACEMENT_LEVEL = "yds.placementLevel.v1"; // placement.js ile aynı (native-only, yoksa null)
+  var LS_LB_LAST_KNOWN = "yds.lb.lastKnownRank.v1"; // leaderboard.js ile aynı (native-only, yoksa null)
 
   var DEFAULT_GOAL = 15;
   var BOX_DAYS = [0, 1, 3, 7, 16, 35]; // index = kutu (1..5); son kutuda "mezun" olur
@@ -25,7 +29,7 @@
   var host = null;
   var words = [];
   var review = null; // { list, i, revealed }
-  var openPopup = null; // null | "review" | "notif" — sağ üstteki yuvarlak ikonların popup'ı
+  var openPopup = null; // null | "review" | "notif" | "streak" | "badges" — sağ üstteki yuvarlak ikonların popup'ı
 
   document.addEventListener("DOMContentLoaded", function () {
     host = document.getElementById("dailyCard");
@@ -288,6 +292,8 @@
     host.appendChild(goalRow);
 
     if (openPopup === "review") host.appendChild(reviewPopup(due));
+    else if (openPopup === "streak") host.appendChild(streakPopup());
+    else if (openPopup === "badges") host.appendChild(badgesPopup());
     else if (openPopup === "notif" && isNative()) host.appendChild(notifPopup());
   }
 
@@ -300,6 +306,12 @@
   var ICON_BELL =
     '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>';
+  var ICON_FLAME =
+    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-2.5.5 2-1 3-2 2.5 1.5-2-1-3.5-1-5.5-1 1-3 3-3 5.5a3 3 0 0 0 6 0"></path></svg>';
+  var ICON_MEDAL =
+    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="12" cy="14" r="7"></circle><path d="M9 8.5L7 3M15 8.5L17 3"></path><path d="M9.5 14l1.7 1.7L15 12"></path></svg>';
 
   function togglePopup(name) {
     openPopup = (openPopup === name) ? null : name;
@@ -315,6 +327,20 @@
     if (due.length) revBtn.appendChild(span("daily-quick-badge", String(due.length)));
     revBtn.addEventListener("click", function () { togglePopup("review"); });
     wrap.appendChild(revBtn);
+
+    var streakBtn = btn("daily-quick-icon daily-quick-icon-streak" + (openPopup === "streak" ? " is-open" : ""), "");
+    streakBtn.setAttribute("aria-label", "Seri");
+    streakBtn.innerHTML = ICON_FLAME;
+    var streakN = currentStreak();
+    if (streakN > 0) streakBtn.appendChild(span("daily-quick-badge daily-quick-badge-streak", String(streakN)));
+    streakBtn.addEventListener("click", function () { togglePopup("streak"); });
+    wrap.appendChild(streakBtn);
+
+    var badgesBtn = btn("daily-quick-icon daily-quick-icon-badges" + (openPopup === "badges" ? " is-open" : ""), "");
+    badgesBtn.setAttribute("aria-label", "Rozetler");
+    badgesBtn.innerHTML = ICON_MEDAL;
+    badgesBtn.addEventListener("click", function () { togglePopup("badges"); });
+    wrap.appendChild(badgesBtn);
 
     if (isNative()) {
       var n = getNotif();
@@ -357,6 +383,134 @@
   function notifPopup() {
     var pop = popupShell("Günlük hatırlatma");
     pop.appendChild(notifRow());
+    return pop;
+  }
+
+  /* ---------- seri (streak) ---------- */
+
+  function currentStreak() {
+    var doneSet = doneDaysSet();
+    var d = todayStr();
+    if (!doneSet[d]) d = addDays(d, -1); // bugün henüz tutturulmadıysa seriyi bozma, dünden say
+    var streak = 0;
+    while (doneSet[d]) { streak++; d = addDays(d, -1); }
+    return streak;
+  }
+
+  function longestStreak() {
+    var days = load(LS_DONE, []).slice().sort();
+    var longest = 0, cur = 0, prev = null;
+    days.forEach(function (d) {
+      cur = (prev && addDays(prev, 1) === d) ? cur + 1 : 1;
+      if (cur > longest) longest = cur;
+      prev = d;
+    });
+    return longest;
+  }
+
+  function doneDaysSet() {
+    var days = load(LS_DONE, []);
+    var set = {};
+    days.forEach(function (d) { set[d] = true; });
+    return set;
+  }
+
+  function streakPopup() {
+    var pop = popupShell("Çalışma serisi");
+    var doneSet = doneDaysSet();
+    var streak = currentStreak();
+
+    var summary = div("streak-summary");
+    summary.appendChild(span("streak-num", String(streak)));
+    summary.appendChild(span("streak-label", streak === 1 ? "gün üst üste" : "gün üst üste"));
+    pop.appendChild(summary);
+    pop.appendChild(span("streak-best daily-muted", "En uzun serin: " + longestStreak() + " gün"));
+
+    var grid = div("streak-heat");
+    var totalDays = 35;
+    var start = addDays(todayStr(), -(totalDays - 1));
+    for (var i = 0; i < totalDays; i++) {
+      var d = addDays(start, i);
+      var cell = document.createElement("span");
+      cell.className = "streak-cell" + (doneSet[d] ? " is-done" : "") + (d === todayStr() ? " is-today" : "");
+      cell.title = d;
+      grid.appendChild(cell);
+    }
+    pop.appendChild(grid);
+    return pop;
+  }
+
+  /* ---------- rozetler (client-side, mevcut yerel veriden hesaplanır) ---------- */
+
+  var ICON_STAR =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">' +
+    '<path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"></path></svg>';
+  var ICON_TROPHY =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">' +
+    '<path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path>' +
+    '<path d="M7 5H4a3 3 0 0 0 3 5"></path><path d="M17 5h3a3 3 0 0 1-3 5"></path></svg>';
+  var ICON_TARGET =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">' +
+    '<circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"></circle></svg>';
+  var ICON_DIAMOND =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">' +
+    '<path d="M12 2l9 4.5v9L12 20l-9-4.5v-9z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>';
+
+  function learnedCount() {
+    var learned = load(LS_LEARNED, {});
+    var n = 0;
+    for (var k in learned) if (learned[k]) n++;
+    return n;
+  }
+  function bestPerfect() {
+    var best = load(LS_BEST, {});
+    return Object.keys(best).some(function (lv) {
+      var b = best[lv];
+      return b && b.total > 0 && b.score === b.total;
+    });
+  }
+  function placementLevel() { return load(LS_PLACEMENT_LEVEL, null); }
+  function leaderboardTopRank() {
+    var known = load(LS_LB_LAST_KNOWN, null);
+    return !!(known && known.rank === 1);
+  }
+
+  function badgeList() {
+    var learned = learnedCount();
+    var streak = longestStreak();
+    return [
+      { name: "İlk Adım", desc: "10 kelime öğrendin", icon: ICON_STAR, unlocked: learned >= 10 },
+      { name: "Kelime Ustası", desc: "100 kelime öğrendin", icon: ICON_TROPHY, unlocked: learned >= 100 },
+      { name: "Kelime Efsanesi", desc: "500 kelime öğrendin", icon: ICON_TROPHY, unlocked: learned >= 500, progress: Math.min(learned, 500) + " / 500" },
+      { name: "Alevlendi", desc: "7 gün üst üste çalıştın", icon: ICON_FLAME, unlocked: streak >= 7 },
+      { name: "Sönmeyen Ateş", desc: "30 gün üst üste çalıştın", icon: ICON_FLAME, unlocked: streak >= 30, progress: Math.min(streak, 30) + " / 30" },
+      { name: "Seviyeni Buldun", desc: "İlk seviye testini tamamladın", icon: ICON_TARGET, unlocked: !!placementLevel() },
+      { name: "C1'e Ulaştın", desc: "Seviye testinde C1 aldın", icon: ICON_DIAMOND, unlocked: placementLevel() === "C1" },
+      { name: "Tam İsabet", desc: "Bir testte hepsini doğru bildin", icon: ICON_TARGET, unlocked: bestPerfect() },
+      { name: "Zirvede", desc: "Haftayı lider tablosunda 1. bitirdin", icon: ICON_MEDAL, unlocked: leaderboardTopRank() }
+    ];
+  }
+
+  function badgesPopup() {
+    var pop = popupShell("Rozetler");
+    var badges = badgeList();
+    var unlockedN = badges.filter(function (b) { return b.unlocked; }).length;
+    pop.appendChild(span("streak-best daily-muted", unlockedN + " / " + badges.length + " rozet açıldı"));
+
+    var list = div("badge-list");
+    badges.forEach(function (b) {
+      var row = div("badge-row" + (b.unlocked ? " is-unlocked" : ""));
+      var icon = document.createElement("span");
+      icon.className = "badge-icon";
+      icon.innerHTML = b.icon;
+      row.appendChild(icon);
+      var texts = div("badge-texts");
+      texts.appendChild(span("badge-name", b.name));
+      texts.appendChild(span("badge-desc", b.unlocked || !b.progress ? b.desc : b.progress));
+      row.appendChild(texts);
+      list.appendChild(row);
+    });
+    pop.appendChild(list);
     return pop;
   }
 
